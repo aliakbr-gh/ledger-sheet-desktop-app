@@ -236,29 +236,29 @@ const clearSheet = () => {
     sheet.zongNewBalance = null;
 
     sheet.telenorReversalBalance = null,
-    sheet.jazzReversalBalance = null,
-    sheet.ufoneReversalBalance = null,
-    sheet.zongReversalBalance = null,
+        sheet.jazzReversalBalance = null,
+        sheet.ufoneReversalBalance = null,
+        sheet.zongReversalBalance = null,
 
-    sheet.accountBalance265999891 = null,
-    sheet.accountBalance266001445 = null,
-    sheet.accountBalance37300247 = null,
-    sheet.accountBalance257283991 = null,
+        sheet.accountBalance265999891 = null,
+        sheet.accountBalance266001445 = null,
+        sheet.accountBalance37300247 = null,
+        sheet.accountBalance257283991 = null,
 
-    sheet.deposit265999891 = null,
-    sheet.deposit266001445 = null,
-    sheet.deposit37300247 = null,
-    sheet.deposit257283991 = null,
+        sheet.deposit265999891 = null,
+        sheet.deposit266001445 = null,
+        sheet.deposit37300247 = null,
+        sheet.deposit257283991 = null,
 
-    sheet.withdrawl265999891 = null,
-    sheet.withdrawl266001445 = null,
-    sheet.withdrawl37300247 = null,
-    sheet.withdrawl257283991 = null,
+        sheet.withdrawl265999891 = null,
+        sheet.withdrawl266001445 = null,
+        sheet.withdrawl37300247 = null,
+        sheet.withdrawl257283991 = null,
 
-    sheet.totalCards = null,
-    sheet.sellCards = null,
+        sheet.totalCards = null,
+        sheet.sellCards = null,
 
-    sheet.lastBalances.omni = extractLastBalance(sheet.omni);
+        sheet.lastBalances.omni = extractLastBalance(sheet.omni);
     sheet.lastBalances.easypaisa = extractLastBalance(sheet.easypaisa);
     sheet.lastBalances.jazzcash = extractLastBalance(sheet.jazzcash);
     sheet.lastBalances.epaccount = extractLastBalance(sheet.epaccount);
@@ -527,6 +527,7 @@ const cashTotal = computed(() => {
 
 const handleDownloadPDF = async () => {
     const element = document.getElementById("print-area");
+
     if (!element) return;
 
     const noPrintEls = document.querySelectorAll(".no-print");
@@ -535,30 +536,91 @@ const handleDownloadPDF = async () => {
         (el as HTMLElement).style.display = "none";
     });
 
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Force better rendering for inputs
+    const inputs = element.querySelectorAll("input");
+
+    inputs.forEach((input) => {
+        const el = input as HTMLInputElement;
+
+        el.style.padding = "0";
+        el.style.margin = "0";
+        el.style.lineHeight = "1";
+        el.style.height = "24px";
+        el.style.boxSizing = "border-box";
+        el.style.verticalAlign = "middle";
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
     try {
         const canvas = await html2canvas(element, {
-            scale: 2,
+            scale: 2, // good quality without huge file
             useCORS: true,
             backgroundColor: "#ffffff",
+
+            // IMPORTANT
+            windowWidth: element.scrollWidth,
+            windowHeight: element.scrollHeight,
+
+            width: element.scrollWidth,
+            height: element.scrollHeight,
+
+            scrollX: 0,
+            scrollY: 0,
+
+            logging: false,
         });
 
         noPrintEls.forEach((el) => {
             (el as HTMLElement).style.display = "";
         });
 
-        const imgData = canvas.toDataURL("image/jpeg", 1.0);
+        const imgData = canvas.toDataURL("image/jpeg", 0.85);
 
         const pdf = new jsPDF({
             orientation: "landscape",
             unit: "mm",
             format: "a4",
+            compress: true,
         });
 
-        const pageWidth = 297;
-        const imgHeight = (canvas.height * pageWidth) / canvas.width;
+        // A4 landscape dimensions
+        const pdfWidth = 297;
+        const pdfHeight = 210;
 
+        // margins
+        const margin = 5;
+
+        const usableWidth = pdfWidth - margin * 2;
+        const usableHeight = pdfHeight - margin * 2;
+
+        // image dimensions
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+
+        // fit image perfectly inside page
+        const ratio = Math.min(
+            usableWidth / imgWidth,
+            usableHeight / imgHeight
+        );
+
+        const finalWidth = imgWidth * ratio;
+        const finalHeight = imgHeight * ratio;
+
+        // center image
+        const x = (pdfWidth - finalWidth) / 2;
+        const y = (pdfHeight - finalHeight) / 2;
+
+        pdf.addImage(
+            imgData,
+            "JPEG",
+            x,
+            y,
+            finalWidth,
+            finalHeight,
+            undefined,
+            "FAST"
+        );
 
         const now = new Date();
 
@@ -567,8 +629,6 @@ const handleDownloadPDF = async () => {
         const month = String(now.getMonth() + 1).padStart(2, "0");
 
         const year = now.getFullYear();
-
-        pdf.addImage(imgData, "JPEG", 0, 0, pageWidth, imgHeight);
 
         const fileName = `KMKCommunicationSheet-${day}-${month}-${year}.pdf`;
 
@@ -1301,9 +1361,9 @@ const handleDownloadPDF = async () => {
                             </tr>
 
                             <tr>
-                                <td>Difference</td>
+                                <td style="font-size: 1.5rem;">Difference</td>
                                 <td>
-                                    <input
+                                    <input style="font-size: 1.5rem;"
                                         :value="((n(sheet.previousCash) + cashInfoTotal) - purchasingTotal) - cashTotal"
                                         type="number" readonly />
                                 </td>
