@@ -53,6 +53,15 @@ type Sheet = {
     jazzcash: { sending: string; receiving: string }[];
     epaccount: { sending: string; receiving: string }[];
     jcaccount: { sending: string; receiving: string }[];
+
+    lastBalances: {
+        omni: number | null;
+        easypaisa: number | null;
+        jazzcash: number | null;
+        epaccount: number | null;
+        jcaccount: number | null;
+    };
+
     manualpurchasing: { name: string; amount: number | null }[];
 
     redBook: { name: string; amount: number | null }[];
@@ -150,6 +159,14 @@ const sheet = reactive<Sheet>({
         amount: null,
     })),
 
+    lastBalances: {
+        omni: null,
+        easypaisa: null,
+        jazzcash: null,
+        epaccount: null,
+        jcaccount: null,
+    },
+
     redBook: Array.from({ length: 8 }, () => ({
         name: "",
         amount: null as number | null,
@@ -205,24 +222,94 @@ watch(
 );
 
 const clearSheet = () => {
-    Object.keys(sheet).forEach((key) => {
-        const k = key as keyof Sheet;
 
-        const value = sheet[k];
+    sheet.previousCash = cashTotal.value;
 
-        if (Array.isArray(value)) {
-            (sheet as any)[k] = value.map(() => ({
-                name: "",
-                amount: null,
-            }));
-        } else if (typeof value === "number" || value === null) {
-            (sheet as any)[k] = null;
+    sheet.telenorOpeningBalance = sheet.telenorClosingBalance;
+    sheet.jazzOpeningBalance = sheet.jazzClosingBalance;
+    sheet.ufoneOpeningBalance = sheet.ufoneClosingBalance;
+    sheet.zongOpeningBalance = sheet.zongClosingBalance;
+
+    sheet.telenorNewBalance = null;
+    sheet.jazzNewBalance = null;
+    sheet.ufoneNewBalance = null;
+    sheet.zongNewBalance = null;
+
+    sheet.telenorReversalBalance = null,
+        sheet.jazzReversalBalance = null,
+        sheet.ufoneReversalBalance = null,
+        sheet.zongReversalBalance = null,
+
+        sheet.accountBalance265999891 = null,
+        sheet.accountBalance266001445 = null,
+        sheet.accountBalance37300247 = null,
+        sheet.accountBalance257283991 = null,
+
+        sheet.deposit265999891 = null,
+        sheet.deposit266001445 = null,
+        sheet.deposit37300247 = null,
+        sheet.deposit257283991 = null,
+
+        sheet.withdrawl265999891 = null,
+        sheet.withdrawl266001445 = null,
+        sheet.withdrawl37300247 = null,
+        sheet.withdrawl257283991 = null,
+
+        sheet.totalCards = null,
+        sheet.sellCards = null,
+
+        sheet.lastBalances.omni = extractLastBalance(sheet.omni);
+    sheet.lastBalances.easypaisa = extractLastBalance(sheet.easypaisa);
+    sheet.lastBalances.jazzcash = extractLastBalance(sheet.jazzcash);
+    sheet.lastBalances.epaccount = extractLastBalance(sheet.epaccount);
+    sheet.lastBalances.jcaccount = extractLastBalance(sheet.jcaccount);
+
+    const shift = (type: "telenor" | "jazz" | "ufone" | "zong") => {
+        const closing = sheet[`${type}ClosingBalance`];
+
+        if (closing !== null && closing !== undefined) {
+            sheet[`${type}OpeningBalance`] = closing;
         }
+    };
+
+    shift("telenor");
+    shift("jazz");
+    shift("ufone");
+    shift("zong");
+
+    const clearEntries = (arr: any[]) => {
+        arr.forEach((item) => {
+            item.sending = "";
+            item.receiving = "";
+        });
+    };
+
+    clearEntries(sheet.omni);
+    clearEntries(sheet.easypaisa);
+    clearEntries(sheet.jazzcash);
+    clearEntries(sheet.epaccount);
+    clearEntries(sheet.jcaccount);
+
+    sheet.manualpurchasing.forEach((item) => {
+        item.name = "";
+        item.amount = null;
     });
 
-    localStorage.removeItem("sheet");
-};
+    sheet.borrow.forEach((item) => {
+        item.name = "";
+        item.amount = null;
+    });
 
+    sheet.recovery.forEach((item) => {
+        item.name = "";
+        item.amount = null;
+    });
+
+    sheet.redBook.forEach((item) => {
+        item.name = "";
+        item.amount = null;
+    });
+};
 
 // Helper Functions
 const n = (v: number | null | undefined) => v ?? 0;
@@ -793,43 +880,36 @@ const handleDownloadPDF = async () => {
                             <tr>
                                 <th colspan="2">UBL Omni</th>
                             </tr>
-
                             <tr>
                                 <td>Balance</td>
                                 <td>
-                                    <input type="number" />
+                                    <input :value="sheet.lastBalances.omni" type="number" disabled />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td>Sending</td>
                                 <td>Receiving</td>
                             </tr>
-
                             <tr v-for="(row, index) in sheet.omni" :key="index">
                                 <td>
                                     <input type="text" v-model="row.sending" />
                                 </td>
-
                                 <td>
                                     <input type="text" v-model="row.receiving" />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td>Total Sending</td>
                                 <td>
                                     <input :value="getTotalSending(sheet.omni)" type="number" disabled />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td>Total Receiving</td>
                                 <td>
                                     <input :value="getTotalReceiving(sheet.omni)" type="number" disabled />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td>Last Balance</td>
                                 <td>
@@ -850,7 +930,7 @@ const handleDownloadPDF = async () => {
                             <tr>
                                 <td>Balance</td>
                                 <td>
-                                    <input type="number" />
+                                    <input :value="sheet.lastBalances.easypaisa" type="number" disabled />
                                 </td>
                             </tr>
 
@@ -875,14 +955,12 @@ const handleDownloadPDF = async () => {
                                     <input :value="getTotalSending(sheet.easypaisa)" type="number" disabled />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td>Total Receiving</td>
                                 <td>
                                     <input :value="getTotalReceiving(sheet.easypaisa)" type="number" disabled />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td>Last Balance</td>
                                 <td>
@@ -903,7 +981,7 @@ const handleDownloadPDF = async () => {
                             <tr>
                                 <td>Balance</td>
                                 <td>
-                                    <input type="number" />
+                                    <input :value="sheet.lastBalances.jazzcash" type="number" disabled />
                                 </td>
                             </tr>
 
@@ -928,14 +1006,12 @@ const handleDownloadPDF = async () => {
                                     <input :value="getTotalSending(sheet.jazzcash)" type="number" disabled />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td>Total Receiving</td>
                                 <td>
                                     <input :value="getTotalReceiving(sheet.jazzcash)" type="number" disabled />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td>Last Balance</td>
                                 <td>
@@ -956,7 +1032,7 @@ const handleDownloadPDF = async () => {
                             <tr>
                                 <td>Balance</td>
                                 <td>
-                                    <input type="number" />
+                                    <input :value="sheet.lastBalances.epaccount" type="number" disabled />
                                 </td>
                             </tr>
 
@@ -974,21 +1050,18 @@ const handleDownloadPDF = async () => {
                                     <input type="text" v-model="row.receiving" />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td>Total Sending</td>
                                 <td>
                                     <input :value="getTotalSending(sheet.epaccount)" type="number" disabled />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td>Total Receiving</td>
                                 <td>
                                     <input :value="getTotalReceiving(sheet.epaccount)" type="number" disabled />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td>Last Balance</td>
                                 <td>
@@ -1009,7 +1082,7 @@ const handleDownloadPDF = async () => {
                             <tr>
                                 <td>Balance</td>
                                 <td>
-                                    <input type="number" />
+                                    <input :value="sheet.lastBalances.jcaccount" type="number" disabled />
                                 </td>
                             </tr>
 
@@ -1022,26 +1095,22 @@ const handleDownloadPDF = async () => {
                                 <td>
                                     <input type="text" v-model="row.sending" />
                                 </td>
-
                                 <td>
                                     <input type="text" v-model="row.receiving" />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td>Total Sending</td>
                                 <td>
                                     <input :value="getTotalSending(sheet.jcaccount)" type="number" disabled />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td>Total Receiving</td>
                                 <td>
                                     <input :value="getTotalReceiving(sheet.jcaccount)" type="number" disabled />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td>Last Balance</td>
                                 <td>
@@ -1058,35 +1127,30 @@ const handleDownloadPDF = async () => {
                             <tr>
                                 <th colspan="2">Purchasing</th>
                             </tr>
-
                             <tr>
                                 <td class="text-sm">UBL Omni Rec</td>
                                 <td>
                                     <input :value="getTotalReceiving(sheet.omni)" type="number" disabled />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td class="text-sm">EasyPaisa Rec</td>
                                 <td>
                                     <input :value="getTotalReceiving(sheet.easypaisa)" type="number" disabled />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td class="text-sm">JazzCash Rec</td>
                                 <td>
                                     <input :value="getTotalReceiving(sheet.jazzcash)" type="number" disabled />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td class="text-sm">EP AC 0333 Rec</td>
                                 <td>
                                     <input :value="getTotalReceiving(sheet.epaccount)" type="number" disabled />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td class="text-sm">JC Merchant Account</td>
                                 <td>
