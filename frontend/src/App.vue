@@ -318,7 +318,9 @@ const isPureNumber = (val: string | number | null | undefined) => {
     if (typeof val === "number") return true;
 
     if (typeof val === "string") {
-        return /^\d+(\.\d+)?$/.test(val);
+        const cleaned = val.trim();
+
+        return /^\d+(\.\d+)?$/.test(cleaned);
     }
 
     return false;
