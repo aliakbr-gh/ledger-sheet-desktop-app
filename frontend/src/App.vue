@@ -236,29 +236,29 @@ const clearSheet = () => {
     sheet.zongNewBalance = null;
 
     sheet.telenorReversalBalance = null,
-        sheet.jazzReversalBalance = null,
-        sheet.ufoneReversalBalance = null,
-        sheet.zongReversalBalance = null,
+    sheet.jazzReversalBalance = null,
+    sheet.ufoneReversalBalance = null,
+    sheet.zongReversalBalance = null,
 
-        sheet.accountBalance265999891 = null,
-        sheet.accountBalance266001445 = null,
-        sheet.accountBalance37300247 = null,
-        sheet.accountBalance257283991 = null,
+    sheet.accountBalance265999891 = null,
+    sheet.accountBalance266001445 = null,
+    sheet.accountBalance37300247 = null,
+    sheet.accountBalance257283991 = null,
 
-        sheet.deposit265999891 = null,
-        sheet.deposit266001445 = null,
-        sheet.deposit37300247 = null,
-        sheet.deposit257283991 = null,
+    sheet.deposit265999891 = null,
+    sheet.deposit266001445 = null,
+    sheet.deposit37300247 = null,
+    sheet.deposit257283991 = null,
 
-        sheet.withdrawl265999891 = null,
-        sheet.withdrawl266001445 = null,
-        sheet.withdrawl37300247 = null,
-        sheet.withdrawl257283991 = null,
+    sheet.withdrawl265999891 = null,
+    sheet.withdrawl266001445 = null,
+    sheet.withdrawl37300247 = null,
+    sheet.withdrawl257283991 = null,
 
-        sheet.totalCards = null,
-        sheet.sellCards = null,
+    sheet.totalCards = null,
+    sheet.sellCards = null,
 
-        sheet.lastBalances.omni = extractLastBalance(sheet.omni);
+    sheet.lastBalances.omni = extractLastBalance(sheet.omni);
     sheet.lastBalances.easypaisa = extractLastBalance(sheet.easypaisa);
     sheet.lastBalances.jazzcash = extractLastBalance(sheet.jazzcash);
     sheet.lastBalances.epaccount = extractLastBalance(sheet.epaccount);
