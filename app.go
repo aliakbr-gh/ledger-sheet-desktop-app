@@ -40,7 +40,20 @@ func (a *App) SavePDF(fileName string, data []byte) error {
 	switch goruntime.GOOS {
 
 	case "windows":
-		basePath = `D:\Khawaj Muhammad Khan\Shop Documents\Daily Worksheet 2026`
+		customPath := `D:\Khawaj Muhammad Khan\Shop Documents\Daily Worksheet 2026`
+
+		// Check if custom path exists
+		if _, err := os.Stat(customPath); err == nil {
+			basePath = customPath
+		} else {
+			// Fallback to Downloads folder
+			home, err := os.UserHomeDir()
+			if err != nil {
+				return err
+			}
+
+			basePath = filepath.Join(home, "Downloads", "KMKCommunication")
+		}
 
 	case "darwin", "linux":
 		home, err := os.UserHomeDir()
