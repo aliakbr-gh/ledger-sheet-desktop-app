@@ -1363,7 +1363,7 @@ const handleDownloadPDF = async () => {
                             <tr>
                                 <td style="font-size: 1.5rem;">Difference</td>
                                 <td>
-                                    <input style="font-size: 1.5rem;"
+                                    <input style="font-size: 1.1rem;"
                                         :value="((n(sheet.previousCash) + cashInfoTotal) - purchasingTotal) - cashTotal"
                                         type="number" readonly />
                                 </td>
