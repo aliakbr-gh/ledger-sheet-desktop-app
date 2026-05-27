@@ -24,7 +24,7 @@ tr,
 th,
 td {
     border: 1px solid black;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
 }
 
 input {
@@ -32,7 +32,7 @@ input {
     color: black;
     text-align: center;
     font-weight: bold;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     border: none;
     height: 100%;
     outline: none;
