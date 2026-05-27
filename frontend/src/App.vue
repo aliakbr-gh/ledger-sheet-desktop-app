@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, reactive, watch, computed } from "vue";
+import CashModal from "./CashModal.vue";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { SavePDF } from "../wailsjs/go/main/App";
@@ -185,6 +186,8 @@ const sheet = reactive<Sheet>({
     cash10: null,
     cash5: null,
 });
+
+const showCashModal = ref(false);
 
 const savedSheet = localStorage.getItem("sheet");
 
@@ -684,6 +687,10 @@ const handleDownloadPDF = async () => {
                     <h2 id="current-date">{{ dateTime.date }}</h2>
                     <h2 id="current-time">{{ dateTime.time }}</h2>
                     <div class="actions no-print">
+                        <button class="button" @click="showCashModal = true">
+                            Cash Calculator
+                        </button>
+
                         <button class="button" @click="handleDownloadPDF">
                             Save PDF
                         </button>
@@ -1487,4 +1494,6 @@ const handleDownloadPDF = async () => {
             </div>
         </div>
     </div>
+
+    <CashModal v-model="showCashModal" />
 </template>
