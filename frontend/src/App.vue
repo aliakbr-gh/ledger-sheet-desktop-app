@@ -3,6 +3,8 @@ import { ref, onMounted, onUnmounted, reactive, watch, computed } from "vue";
 import CashModal from "./CashModal.vue";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { Toaster, toast } from 'vue-sonner'
+import 'vue-sonner/style.css'
 import { SavePDF } from "../wailsjs/go/main/App";
 
 const DEBUG = false;
@@ -327,6 +329,8 @@ const clearSheet = () => {
         item.name = "";
         item.amount = null;
     });
+
+    toast.success("Sheet clear successfully");
 };
 
 // Helper Functions
@@ -659,12 +663,15 @@ const handleDownloadPDF = async () => {
             Array.from(new Uint8Array(pdfArrayBuffer))
         );
 
-    } catch (error) {
+        toast.success("PDF save successfully");
+    } catch (error: any) {
         console.error(error);
 
         noPrintEls.forEach((el) => {
             (el as HTMLElement).style.display = "";
         });
+
+        toast.error("Error while saving pdf", error);
     }
 };
 </script>
@@ -1496,4 +1503,5 @@ const handleDownloadPDF = async () => {
     </div>
 
     <CashModal v-model="showCashModal" />
+    <Toaster position="top-center" richColors />
 </template>
