@@ -415,10 +415,12 @@ const totalELoad = computed(() => {
 });
 
 const borrowTotal = computed(() => {
-    return sheet.borrow.reduce(
+    const borrowSum = sheet.borrow.reduce(
         (sum, item) => sum + (Number(item.amount) || 0),
         0
     );
+
+    return borrowSum + redBookTotal.value;
 });
 
 const recoveryTotal = computed(() => {
@@ -892,10 +894,16 @@ const handleDownloadPDF = async () => {
 
                                 <tr v-for="(row, index) in sheet.borrow" :key="index">
                                     <td>
-                                        <input type="text" v-model="row.name" />
+                                        <input type="text"
+                                            :value="index === sheet.borrow.length - 1 ? 'Home PURCHS' : row.name"
+                                            @input="row.name = ($event.target as HTMLInputElement).value" />
                                     </td>
+
                                     <td>
-                                        <input type="number" v-model.number="row.amount" />
+                                        <input v-if="index === sheet.borrow.length - 1" type="number"
+                                            :value="redBookTotal" disabled />
+
+                                        <input v-else type="number" v-model.number="row.amount" />
                                     </td>
                                 </tr>
                                 <tr>
@@ -1376,7 +1384,7 @@ const handleDownloadPDF = async () => {
                     <table>
                         <tbody>
                             <tr>
-                                <th colspan="2">RED Book</th>
+                                <th colspan="2">HOME Purchasing</th>
                             </tr>
                             <tr v-for="(row, index) in sheet.redBook" :key="index">
                                 <td>
@@ -1421,7 +1429,7 @@ const handleDownloadPDF = async () => {
                                 </td>
                             </tr>
                             <tr>
-                                <td>EasyPaisa &amp; JazzCash Accounts</td>
+                                <td>EP &amp; JC Accounts</td>
                                 <td>
                                     <input :value="getTotalSending(sheet.epaccount) +
                                         getTotalSending(sheet.jcaccount)
