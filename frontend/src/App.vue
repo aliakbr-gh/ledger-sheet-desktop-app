@@ -240,12 +240,27 @@ const clearSheet = () => {
         sheet.ufoneReversalBalance = null,
         sheet.zongReversalBalance = null,
 
-        sheet.accountBalance265999891 = null,
-        sheet.accountBalance266001445 = null,
-        sheet.accountBalance37300247 = null,
-        sheet.accountBalance257283991 = null,
+        sheet.accountBalance265999891 =
+        n(sheet.accountBalance265999891) +
+        n(sheet.deposit265999891) -
+        n(sheet.withdrawl265999891);
 
-        sheet.deposit265999891 = null,
+    sheet.accountBalance266001445 =
+        n(sheet.accountBalance266001445) +
+        n(sheet.deposit266001445) -
+        n(sheet.withdrawl266001445);
+
+    sheet.accountBalance37300247 =
+        n(sheet.accountBalance37300247) +
+        n(sheet.deposit37300247) -
+        n(sheet.withdrawl37300247);
+
+    sheet.accountBalance257283991 =
+        n(sheet.accountBalance257283991) +
+        n(sheet.deposit257283991) -
+        n(sheet.withdrawl257283991);
+
+    sheet.deposit265999891 = null,
         sheet.deposit266001445 = null,
         sheet.deposit37300247 = null,
         sheet.deposit257283991 = null,
