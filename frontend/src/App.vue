@@ -135,7 +135,7 @@ const sheet = reactive<Sheet>({
         receiving: "",
     })),
 
-    manualpurchasing: Array.from({ length: 6 }, () => ({
+    manualpurchasing: Array.from({ length: 9 }, () => ({
         name: "",
         amount: null,
     })),
@@ -665,10 +665,10 @@ const clearLocalStorage = () => {
                 </div>
                 <div class="time-actions-container">
                     <div>
-                        <h2 id="current-date">{{ dateTime.date }}</h2>
-                        <h2 id="current-islamic-date" dir="rtl">{{ dateTime.islamicDate }}</h2>
+                        <h3 id="current-date">{{ dateTime.date }}</h3>
+                        <h3 id="current-islamic-date" dir="rtl">{{ dateTime.islamicDate }}</h3>
                     </div>
-                    <h2 id="current-time">{{ dateTime.time }}</h2>
+                    <h3 id="current-time">{{ dateTime.time }}</h3>
                     <div class="actions no-print">
                         <button class="button" @click="showCashModal = true">
                             Cash Calculator
@@ -881,36 +881,21 @@ const clearLocalStorage = () => {
                                     <th colspan="2">Purchasing/Borrow</th>
                                 </tr>
                                 <tr>
-                                    <td>UBL Omni Rec</td>
+                                    <td>Omni/EP/JC Rec</td>
                                     <td>
-                                        <input :value="getTotalReceiving(sheet.omni)" type="number" disabled />
+                                        <input
+                                            :value="getTotalReceiving(sheet.omni) + getTotalReceiving(sheet.easypaisa) + getTotalReceiving(sheet.jazzcash)"
+                                            type="number" disabled />
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>EasyPaisa Rec</td>
+                                    <td>EP/JC Account</td>
                                     <td>
-                                        <input :value="getTotalReceiving(sheet.easypaisa)" type="number" disabled />
+                                        <input
+                                            :value="getTotalReceiving(sheet.epaccount) + getTotalReceiving(sheet.jcaccount)"
+                                            type="number" disabled />
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>JazzCash Rec</td>
-                                    <td>
-                                        <input :value="getTotalReceiving(sheet.jazzcash)" type="number" disabled />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>EP - 0333 Rec</td>
-                                    <td>
-                                        <input :value="getTotalReceiving(sheet.epaccount)" type="number" disabled />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>JC M Account</td>
-                                    <td>
-                                        <input :value="getTotalReceiving(sheet.jcaccount)" type="number" disabled />
-                                    </td>
-                                </tr>
-
                                 <tr v-for="(row, index) in sheet.manualpurchasing" :key="index">
                                     <td>
                                         <input type="text" v-model="row.name" />
