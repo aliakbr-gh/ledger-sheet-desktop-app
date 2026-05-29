@@ -178,3 +178,11 @@ input[type="number"]::-webkit-outer-spin-button {
     appearance: none;
     margin: 0;
 }
+
+.pdf-export input {
+    padding: 0;
+    margin: 0;
+    height: 20px;
+    line-height: 20px;
+    box-sizing: border-box;
+}

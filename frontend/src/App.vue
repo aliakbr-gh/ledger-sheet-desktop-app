@@ -568,7 +568,7 @@ const handleDownloadPDF = async () => {
         const pdfHeight = 210;
 
         // margins
-        const margin = 5;
+        const margin = 0;
 
         const usableWidth = pdfWidth - margin * 2;
         const usableHeight = pdfHeight - margin * 2;
@@ -578,12 +578,8 @@ const handleDownloadPDF = async () => {
         const imgHeight = canvas.height;
 
         // fit image perfectly inside page
-        const ratio = Math.min(
-            usableWidth / imgWidth,
-            usableHeight / imgHeight
-        );
-
-        const finalWidth = imgWidth * ratio;
+        const ratio = usableWidth / imgWidth;
+        const finalWidth = usableWidth;
         const finalHeight = imgHeight * ratio;
 
         // center image
@@ -602,11 +598,8 @@ const handleDownloadPDF = async () => {
         );
 
         const now = new Date();
-
         const day = String(now.getDate()).padStart(2, "0");
-
         const month = String(now.getMonth() + 1).padStart(2, "0");
-
         const year = now.getFullYear();
 
         const fileName = `KMKCommunicationSheet-${day}-${month}-${year}.pdf`;
