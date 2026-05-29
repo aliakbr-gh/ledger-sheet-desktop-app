@@ -74,5 +74,23 @@ func (a *App) SavePDF(fileName string, data []byte) error {
 
 	fullPath := filepath.Join(basePath, fileName)
 
+	if _, err := os.Stat(fullPath); err == nil {
+		ext := filepath.Ext(fileName)
+		name := fileName[:len(fileName)-len(ext)]
+
+		counter := 1
+		for {
+			newFileName := fmt.Sprintf("%s (%d)%s", name, counter, ext)
+			newPath := filepath.Join(basePath, newFileName)
+
+			if _, err := os.Stat(newPath); os.IsNotExist(err) {
+				fullPath = newPath
+				break
+			}
+
+			counter++
+		}
+	}
+
 	return os.WriteFile(fullPath, data, 0644)
 }
