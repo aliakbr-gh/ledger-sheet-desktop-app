@@ -132,9 +132,10 @@ input:disabled {
 
 .eload-accounts-container {
     display: flex;
-    gap: 130px;
+    gap: 120px;
     align-items: start;
     justify-content: center;
+    margin-bottom: 10px;
 }
 
 .easyload-container,
@@ -145,7 +146,7 @@ input:disabled {
     justify-content: space-between;
 }
 
-.borrow-recovery-container {
+.purchasing-recovery-container {
     display: flex;
     gap: 10px;
 }
@@ -160,7 +161,7 @@ input:disabled {
 
 .analytics-container {
     display: flex;
-    gap: 82px;
+    gap: 45px;
     align-items: start;
     justify-content: center;
 }

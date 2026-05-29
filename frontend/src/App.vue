@@ -31,25 +31,15 @@ type Sheet = {
     zongClosingBalance: number | null;
 
     accountBalance265999891: number | null;
-    accountBalance266001445: number | null;
     accountBalance37300247: number | null;
-    accountBalance257283991: number | null;
 
-    borrow: { name: string; amount: number | null }[];
     recovery: { name: string; amount: number | null }[];
 
     deposit265999891: number | null;
-    deposit266001445: number | null;
     deposit37300247: number | null;
-    deposit257283991: number | null;
 
     withdrawl265999891: number | null;
-    withdrawl266001445: number | null;
     withdrawl37300247: number | null;
-    withdrawl257283991: number | null;
-
-    totalCards: number | null;
-    sellCards: number | null;
 
     omni: { sending: string; receiving: string }[];
     easypaisa: { sending: string; receiving: string }[];
@@ -64,6 +54,8 @@ type Sheet = {
         epaccount: number | null;
         jcaccount: number | null;
     };
+
+    stampPaperTotal: number | null;
 
     manualpurchasing: { name: string; amount: number | null }[];
 
@@ -105,32 +97,18 @@ const sheet = reactive<Sheet>({
     zongClosingBalance: null,
 
     accountBalance265999891: null,
-    accountBalance266001445: null,
     accountBalance37300247: null,
-    accountBalance257283991: null,
 
-    borrow: Array.from({ length: 12 }, () => ({
-        name: "",
-        amount: null as number | null,
-    })),
-
-    recovery: Array.from({ length: 12 }, () => ({
+    recovery: Array.from({ length: 10 }, () => ({
         name: "",
         amount: null as number | null,
     })),
 
     deposit265999891: null,
-    deposit266001445: null,
     deposit37300247: null,
-    deposit257283991: null,
 
     withdrawl265999891: null,
-    withdrawl266001445: null,
     withdrawl37300247: null,
-    withdrawl257283991: null,
-
-    totalCards: null,
-    sellCards: null,
 
     omni: Array.from({ length: 11 }, () => ({
         sending: "",
@@ -157,10 +135,12 @@ const sheet = reactive<Sheet>({
         receiving: "",
     })),
 
-    manualpurchasing: Array.from({ length: 10 }, () => ({
+    manualpurchasing: Array.from({ length: 5 }, () => ({
         name: "",
         amount: null,
     })),
+
+    stampPaperTotal: null,
 
     lastBalances: {
         omni: null,
@@ -198,15 +178,8 @@ if (savedSheet) {
 
     Object.assign(sheet, parsed);
 
-    if (!parsed.borrow) {
-        sheet.borrow = Array.from({ length: 12 }, () => ({
-            name: "",
-            amount: null,
-        }));
-    }
-
     if (!parsed.recovery) {
-        sheet.recovery = Array.from({ length: 12 }, () => ({
+        sheet.recovery = Array.from({ length: 10 }, () => ({
             name: "",
             amount: null,
         }));
@@ -250,33 +223,16 @@ const clearSheet = () => {
         n(sheet.deposit265999891) -
         n(sheet.withdrawl265999891);
 
-    sheet.accountBalance266001445 =
-        n(sheet.accountBalance266001445) +
-        n(sheet.deposit266001445) -
-        n(sheet.withdrawl266001445);
-
     sheet.accountBalance37300247 =
         n(sheet.accountBalance37300247) +
         n(sheet.deposit37300247) -
         n(sheet.withdrawl37300247);
 
-    sheet.accountBalance257283991 =
-        n(sheet.accountBalance257283991) +
-        n(sheet.deposit257283991) -
-        n(sheet.withdrawl257283991);
-
     sheet.deposit265999891 = null,
-        sheet.deposit266001445 = null,
         sheet.deposit37300247 = null,
-        sheet.deposit257283991 = null,
 
         sheet.withdrawl265999891 = null,
-        sheet.withdrawl266001445 = null,
         sheet.withdrawl37300247 = null,
-        sheet.withdrawl257283991 = null,
-
-        sheet.totalCards = null,
-        sheet.sellCards = null,
 
         sheet.lastBalances.omni = extractLastBalance(sheet.omni);
     sheet.lastBalances.easypaisa = extractLastBalance(sheet.easypaisa);
@@ -315,11 +271,6 @@ const clearSheet = () => {
         item.amount = null;
     });
 
-    sheet.borrow.forEach((item) => {
-        item.name = "";
-        item.amount = null;
-    });
-
     sheet.recovery.forEach((item) => {
         item.name = "";
         item.amount = null;
@@ -330,11 +281,17 @@ const clearSheet = () => {
         item.amount = null;
     });
 
+    sheet.stampPaperTotal = null;
+
+    sheet.extra = null;
+
     toast.success("Sheet clear successfully");
 };
 
 // Helper Functions
-const n = (v: number | null | undefined) => v ?? 0;
+const n = (v: number | null | undefined): number => {
+    return Number(v) || 0;
+};
 
 const isPureNumber = (val: string | number | null | undefined) => {
     if (typeof val === "number") return true;
@@ -351,12 +308,14 @@ const isPureNumber = (val: string | number | null | undefined) => {
 // Header
 const dateTime = ref({
     date: "",
+    islamicDate: "",
     time: "",
 });
 
 const updateDateTime = () => {
     const now = new Date();
 
+    // English Date
     dateTime.value.date = now.toLocaleDateString("en-US", {
         weekday: "long",
         year: "numeric",
@@ -364,13 +323,34 @@ const updateDateTime = () => {
         day: "numeric",
     });
 
+    // Islamic Urdu Date
+    const islamicFormatter = new Intl.DateTimeFormat(
+        "ur-PK-u-ca-islamic-umalqura",
+        {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+        }
+    );
+
+    const parts = islamicFormatter.formatToParts(now);
+
+    const day = parts.find(p => p.type === "day")?.value || "";
+    const month = parts.find(p => p.type === "month")?.value || "";
+    const year = parts.find(p => p.type === "year")?.value || "";
+    const weekday = parts.find(p => p.type === "weekday")?.value || "";
+
+    dateTime.value.islamicDate =
+        `${day} ${month} ${year} ہجری بروز ${weekday}`;
+
+    // Time
     dateTime.value.time = now.toLocaleTimeString("en-US", {
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
     });
 };
-
 let interval: number;
 
 onMounted(() => {
@@ -436,19 +416,13 @@ const totalELoad = computed(() => {
     return telenor + jazz + ufone + zong;
 });
 
-const borrowTotal = computed(() => {
-    const borrowSum = sheet.borrow.reduce(
-        (sum, item) => sum + (Number(item.amount) || 0),
-        0
-    );
-
-    return borrowSum + redBookTotal.value;
-});
-
 const recoveryTotal = computed(() => {
-    return sheet.recovery.reduce(
-        (sum, item) => sum + (Number(item.amount) || 0),
-        0
+    return (
+        sheet.recovery.reduce(
+            (sum, item) => sum + (Number(item.amount) || 0),
+            0
+        ) +
+        n(sheet.stampPaperTotal)
     );
 });
 
@@ -504,7 +478,8 @@ const purchasingTotal = computed(() => {
         sheet.manualpurchasing.reduce(
             (sum, item) => sum + (Number(item.amount) || 0),
             0
-        )
+        ) +
+        redBookTotal.value
     );
 });
 
@@ -516,16 +491,8 @@ const cashInfoTotal = computed(() => {
         getTotalSending(sheet.epaccount) +
         getTotalSending(sheet.jcaccount) +
         recoveryTotal.value +
-        (100 * n(sheet.sellCards)) +
         totalELoad.value +
         n(sheet.extra)
-    );
-});
-
-const manualPurchasingTotal = computed(() => {
-    return sheet.manualpurchasing.reduce(
-        (sum, item) => sum + (Number(item.amount) || 0),
-        0
     );
 });
 
@@ -691,7 +658,10 @@ const handleDownloadPDF = async () => {
                     <h1>KMK Communication</h1>
                 </div>
                 <div class="time-actions-container">
-                    <h2 id="current-date">{{ dateTime.date }}</h2>
+                    <div>
+                        <h2 id="current-date">{{ dateTime.date }}</h2>
+                        <h2 id="current-islamic-date" dir="rtl">{{ dateTime.islamicDate }}</h2>
+                    </div>
                     <h2 id="current-time">{{ dateTime.time }}</h2>
                     <div class="actions no-print">
                         <button class="button" @click="showCashModal = true">
@@ -780,7 +750,56 @@ const handleDownloadPDF = async () => {
                                 </tbody>
                             </table>
                         </div>
+                    </div>
 
+                    <div class="accounts-container space-y">
+                        <div class="accounts">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Accounts</th>
+                                        <th>265999891</th>
+                                        <th>37300247</th>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Rs</td>
+                                        <td><input v-model="sheet.accountBalance265999891" type="number" /></td>
+                                        <td><input v-model="sheet.accountBalance37300247" type="number" /></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Deposit</td>
+                                        <td><input v-model="sheet.deposit265999891" type="number" /></td>
+                                        <td><input v-model="sheet.deposit37300247" type="number" /></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Total Rs</td>
+                                        <td><input :value="n(sheet.accountBalance265999891) + n(sheet.deposit265999891)"
+                                                type="number" disabled /></td>
+                                        <td><input :value="n(sheet.accountBalance37300247) + n(sheet.deposit37300247)"
+                                                type="number" disabled /></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Withdrawl</td>
+                                        <td><input v-model="sheet.withdrawl265999891" type="number" /></td>
+                                        <td><input v-model="sheet.withdrawl37300247" type="number" /></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Remaining Balance</td>
+                                        <td><input
+                                                :value="(n(sheet.accountBalance265999891) + n(sheet.deposit265999891)) - n(sheet.withdrawl265999891)"
+                                                type="number" disabled /></td>
+                                        <td><input
+                                                :value="(n(sheet.accountBalance37300247) + n(sheet.deposit37300247)) - n(sheet.withdrawl37300247)"
+                                                type="number" disabled /></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                         <div class="eload-summery mx">
                             <table>
                                 <tbody>
@@ -804,108 +823,8 @@ const handleDownloadPDF = async () => {
                                         <td><input :value="getELoadSell('zong')" type="number" disabled /></td>
                                     </tr>
                                     <tr>
-                                        <td>Total Load</td>
+                                        <td>Total</td>
                                         <td><input :value="totalELoad" type="number" disabled /></td>
-                                    </tr>
-                                    <tr>
-                                        <td>AD</td>
-                                        <td><input :value="borrowTotal" type="number" disabled /></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Total</td>
-                                        <td><input :value="totalELoad - borrowTotal" type="number" disabled /></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="accounts-container space-y">
-                        <div class="accounts">
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <th>Accounts</th>
-                                        <th>265999891</th>
-                                        <th>266001445</th>
-                                        <th>37300247</th>
-                                        <th>257283991</th>
-                                    </tr>
-
-                                    <tr>
-                                        <td>Rs</td>
-                                        <td><input v-model="sheet.accountBalance265999891" type="number" /></td>
-                                        <td><input v-model="sheet.accountBalance266001445" type="number" /></td>
-                                        <td><input v-model="sheet.accountBalance37300247" type="number" /></td>
-                                        <td><input v-model="sheet.accountBalance257283991" type="number" /></td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>Deposit</td>
-                                        <td><input v-model="sheet.deposit265999891" type="number" /></td>
-                                        <td><input v-model="sheet.deposit266001445" type="number" /></td>
-                                        <td><input v-model="sheet.deposit37300247" type="number" /></td>
-                                        <td><input v-model="sheet.deposit257283991" type="number" /></td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>Total Rs</td>
-                                        <td><input :value="n(sheet.accountBalance265999891) + n(sheet.deposit265999891)"
-                                                type="number" disabled /></td>
-                                        <td><input :value="n(sheet.accountBalance266001445) + n(sheet.deposit266001445)"
-                                                type="number" disabled /></td>
-                                        <td><input :value="n(sheet.accountBalance37300247) + n(sheet.deposit37300247)"
-                                                type="number" disabled /></td>
-                                        <td><input :value="n(sheet.accountBalance257283991) + n(sheet.deposit257283991)"
-                                                type="number" disabled /></td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>Withdrawl</td>
-                                        <td><input v-model="sheet.withdrawl265999891" type="number" /></td>
-                                        <td><input v-model="sheet.withdrawl266001445" type="number" /></td>
-                                        <td><input v-model="sheet.withdrawl37300247" type="number" /></td>
-                                        <td><input v-model="sheet.withdrawl257283991" type="number" /></td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>Remaining Balance</td>
-                                        <td><input
-                                                :value="(n(sheet.accountBalance265999891) + n(sheet.deposit265999891)) - n(sheet.withdrawl265999891)"
-                                                type="number" disabled /></td>
-                                        <td><input
-                                                :value="(n(sheet.accountBalance266001445) + n(sheet.deposit266001445)) - n(sheet.withdrawl266001445)"
-                                                type="number" disabled /></td>
-                                        <td><input
-                                                :value="(n(sheet.accountBalance37300247) + n(sheet.deposit37300247)) - n(sheet.withdrawl37300247)"
-                                                type="number" disabled /></td>
-                                        <td><input
-                                                :value="(n(sheet.accountBalance257283991) + n(sheet.deposit257283991)) - n(sheet.withdrawl257283991)"
-                                                type="number" disabled /></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="cards mx">
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <th colspan="2">Cards</th>
-                                    </tr>
-                                    <tr>
-                                        <td>Total</td>
-                                        <td><input v-model="sheet.totalCards" type="number" /></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Sell</td>
-                                        <td><input v-model="sheet.sellCards" type="number" /></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Remaining</td>
-                                        <td><input :value="n(sheet.totalCards) - n(sheet.sellCards)" type="number"
-                                                disabled />
-                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -913,43 +832,12 @@ const handleDownloadPDF = async () => {
                     </div>
                 </div>
 
-                <div class="borrow-recovery-container">
-                    <div class="borrow-container">
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <th colspan="2">Borrow</th>
-                                </tr>
-
-                                <tr v-for="(row, index) in sheet.borrow" :key="index">
-                                    <td>
-                                        <input type="text"
-                                            :value="index === sheet.borrow.length - 1 ? 'Home PURCHS' : row.name"
-                                            @input="row.name = ($event.target as HTMLInputElement).value" />
-                                    </td>
-
-                                    <td>
-                                        <input v-if="index === sheet.borrow.length - 1" type="number"
-                                            :value="redBookTotal" disabled />
-
-                                        <input v-else type="number" v-model.number="row.amount" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Total</td>
-                                    <td>
-                                        <input type="number" :value="borrowTotal" disabled />
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
+                <div class="purchasing-recovery-container">
                     <div class="recovery-container">
                         <table>
                             <tbody>
                                 <tr>
-                                    <th colspan="2">Recovery</th>
+                                    <th colspan="2">Recovery/Sell</th>
                                 </tr>
 
                                 <tr v-for="(row, index) in sheet.recovery" :key="index">
@@ -961,9 +849,79 @@ const handleDownloadPDF = async () => {
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td>
+                                        <input type="text" value="Stamp Paper" disabled />
+                                    </td>
+                                    <td>
+                                        <input v-model.number="sheet.stampPaperTotal" type="number" />
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td>Total</td>
                                     <td>
                                         <input type="number" :value="recoveryTotal" disabled />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="purchasing-container">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <th colspan="2">Purchasing/Borrow</th>
+                                </tr>
+                                <tr>
+                                    <td>UBL Omni Rec</td>
+                                    <td>
+                                        <input :value="getTotalReceiving(sheet.omni)" type="number" disabled />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>EasyPaisa Rec</td>
+                                    <td>
+                                        <input :value="getTotalReceiving(sheet.easypaisa)" type="number" disabled />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>JazzCash Rec</td>
+                                    <td>
+                                        <input :value="getTotalReceiving(sheet.jazzcash)" type="number" disabled />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>EP - 0333 Rec</td>
+                                    <td>
+                                        <input :value="getTotalReceiving(sheet.epaccount)" type="number" disabled />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>JC M Account</td>
+                                    <td>
+                                        <input :value="getTotalReceiving(sheet.jcaccount)" type="number" disabled />
+                                    </td>
+                                </tr>
+
+                                <tr v-for="(row, index) in sheet.manualpurchasing" :key="index">
+                                    <td>
+                                        <input type="text" v-model="row.name" />
+                                    </td>
+                                    <td>
+                                        <input type="number" v-model.number="row.amount" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text" value="Home Prchas" disabled />
+                                    </td>
+                                    <td>
+                                        <input :value="redBookTotal" type="number" disabled />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Total Purchsing</td>
+                                    <td>
+                                        <input :value="purchasingTotal" type="number" disabled />
                                     </td>
                                 </tr>
                             </tbody>
@@ -1219,70 +1177,6 @@ const handleDownloadPDF = async () => {
                         </tbody>
                     </table>
                 </div>
-
-                <div class="purchasing">
-                    <table>
-                        <tbody>
-                            <tr>
-                                <th colspan="2">Purchasing</th>
-                            </tr>
-                            <tr>
-                                <td class="text-sm">UBL Omni Rec</td>
-                                <td>
-                                    <input :value="getTotalReceiving(sheet.omni)" type="number" disabled />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-sm">EasyPaisa Rec</td>
-                                <td>
-                                    <input :value="getTotalReceiving(sheet.easypaisa)" type="number" disabled />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-sm">JazzCash Rec</td>
-                                <td>
-                                    <input :value="getTotalReceiving(sheet.jazzcash)" type="number" disabled />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-sm">EP AC 0333 Rec</td>
-                                <td>
-                                    <input :value="getTotalReceiving(sheet.epaccount)" type="number" disabled />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-sm">JC Merchant Account</td>
-                                <td>
-                                    <input :value="getTotalReceiving(sheet.jcaccount)" type="number" disabled />
-                                </td>
-                            </tr>
-
-                            <tr v-for="(row, index) in sheet.manualpurchasing" :key="index">
-                                <td>
-                                    <input type="text" v-model="row.name" />
-                                </td>
-
-                                <td>
-                                    <input type="number" v-model.number="row.amount" />
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>Manual Purchasing Total</td>
-                                <td>
-                                    <input :value="manualPurchasingTotal" type="number" disabled />
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>Total Purchsing</td>
-                                <td>
-                                    <input :value="purchasingTotal" type="number" disabled />
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
             </div>
 
             <div class="analytics-container">
@@ -1367,28 +1261,24 @@ const handleDownloadPDF = async () => {
                                     <input v-model.number="sheet.previousCash" type="number" />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td>Today Cash</td>
                                 <td>
                                     <input :value="cashInfoTotal" type="number" disabled />
                                 </td>
                             </tr>
-
                             <tr>
-                                <td>Total Amount</td>
+                                <td>Total Today & Previous Cash</td>
                                 <td>
                                     <input :value="n(sheet.previousCash) + cashInfoTotal" type="number" disabled />
                                 </td>
                             </tr>
-
                             <tr>
-                                <td>Recovery &amp; Purchasing</td>
+                                <td>Purchasing</td>
                                 <td>
                                     <input :value="purchasingTotal" type="number" disabled />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td>Remaining Cash</td>
                                 <td>
@@ -1396,7 +1286,6 @@ const handleDownloadPDF = async () => {
                                         type="number" disabled />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td style="font-size: 1.5rem;">Difference</td>
                                 <td>
@@ -1458,23 +1347,21 @@ const handleDownloadPDF = async () => {
                                 </td>
                             </tr>
                             <tr>
-                                <td>EP &amp; JC Accounts</td>
+                                <td>EP Account</td>
                                 <td>
-                                    <input :value="getTotalSending(sheet.epaccount) +
-                                        getTotalSending(sheet.jcaccount)
-                                        " type="number" disabled />
+                                    <input :value="getTotalSending(sheet.epaccount)" type="number" disabled />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>JC M Account</td>
+                                <td>
+                                    <input :value="getTotalSending(sheet.jcaccount)" type="number" disabled />
                                 </td>
                             </tr>
                             <tr>
                                 <td>Recovery</td>
                                 <td>
                                     <input :value="recoveryTotal" type="number" disabled />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Card</td>
-                                <td>
-                                    <input :value="100 * n(sheet.sellCards)" type="number" disabled />
                                 </td>
                             </tr>
                             <tr>
