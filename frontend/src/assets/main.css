@@ -19,6 +19,11 @@ body {
     font-weight: bold;
 }
 
+table {
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
 table,
 tr,
 th,
@@ -132,7 +137,7 @@ input:disabled {
 
 .eload-accounts-container {
     display: flex;
-    gap: 120px;
+    gap: 150px;
     align-items: start;
     justify-content: center;
     margin-bottom: 10px;
@@ -153,7 +158,7 @@ input:disabled {
 
 .statements-container {
     display: flex;
-    gap: 10px;
+    gap: 15px;
     align-items: start;
     justify-content: center;
     margin-bottom: 10px;
@@ -161,7 +166,7 @@ input:disabled {
 
 .analytics-container {
     display: flex;
-    gap: 45px;
+    gap: 58px;
     align-items: start;
     justify-content: center;
 }
