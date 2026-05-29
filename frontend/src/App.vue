@@ -99,7 +99,7 @@ const sheet = reactive<Sheet>({
     accountBalance265999891: null,
     accountBalance37300247: null,
 
-    recovery: Array.from({ length: 10 }, () => ({
+    recovery: Array.from({ length: 11 }, () => ({
         name: "",
         amount: null as number | null,
     })),
@@ -110,32 +110,32 @@ const sheet = reactive<Sheet>({
     withdrawl265999891: null,
     withdrawl37300247: null,
 
-    omni: Array.from({ length: 11 }, () => ({
+    omni: Array.from({ length: 10 }, () => ({
         sending: "",
         receiving: "",
     })),
 
-    easypaisa: Array.from({ length: 11 }, () => ({
+    easypaisa: Array.from({ length: 10 }, () => ({
         sending: "",
         receiving: "",
     })),
 
-    jazzcash: Array.from({ length: 11 }, () => ({
+    jazzcash: Array.from({ length: 10 }, () => ({
         sending: "",
         receiving: "",
     })),
 
-    epaccount: Array.from({ length: 11 }, () => ({
+    epaccount: Array.from({ length: 10 }, () => ({
         sending: "",
         receiving: "",
     })),
 
-    jcaccount: Array.from({ length: 11 }, () => ({
+    jcaccount: Array.from({ length: 10 }, () => ({
         sending: "",
         receiving: "",
     })),
 
-    manualpurchasing: Array.from({ length: 5 }, () => ({
+    manualpurchasing: Array.from({ length: 6 }, () => ({
         name: "",
         amount: null,
     })),
@@ -641,6 +641,12 @@ const handleDownloadPDF = async () => {
         toast.error("Error while saving pdf", error);
     }
 };
+
+const clearLocalStorage = () => {
+    localStorage.clear();
+
+    toast.success("Local storage cleared");
+};
 </script>
 
 <template>
@@ -673,6 +679,9 @@ const handleDownloadPDF = async () => {
                         </button>
                         <button class="button-danger" @click="clearSheet">
                             Clear Sheet
+                        </button>
+                        <button v-if="DEBUG" class="button-danger" @click="clearLocalStorage">
+                            Clear Local Storage
                         </button>
                     </div>
                 </div>
