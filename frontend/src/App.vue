@@ -527,19 +527,7 @@ const handleDownloadPDF = async () => {
         (el as HTMLElement).style.display = "none";
     });
 
-    // Force better rendering for inputs
-    const inputs = element.querySelectorAll("input");
-
-    inputs.forEach((input) => {
-        const el = input as HTMLInputElement;
-
-        el.style.padding = "0";
-        el.style.margin = "0";
-        el.style.lineHeight = "1";
-        el.style.height = "24px";
-        el.style.boxSizing = "border-box";
-        el.style.verticalAlign = "middle";
-    });
+    element.classList.add("pdf-export");
 
     await new Promise((resolve) => setTimeout(resolve, 200));
 
@@ -639,6 +627,8 @@ const handleDownloadPDF = async () => {
         });
 
         toast.error("Error while saving pdf", error);
+    } finally {
+        element.classList.remove("pdf-export");
     }
 };
 
