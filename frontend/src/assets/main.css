@@ -166,7 +166,7 @@ input:disabled {
 
 .analytics-container {
     display: flex;
-    gap: 58px;
+    gap: 40px;
     align-items: start;
     justify-content: center;
 }

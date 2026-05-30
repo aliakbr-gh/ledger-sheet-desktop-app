@@ -732,11 +732,11 @@ const handleDownloadPDF = async () => {
 
                 {
                     columns: [
-                        { width: "20%", stack: [{ text: "UBL Omni", style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.omni.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.omni)], ["Total Rec", getTotalReceiving(sheet.omni)], ["Last Bal", extractLastBalance(sheet.omni) || "-"]] }, layout: "lightHorizontalLines" }] },
-                        { width: "20%", stack: [{ text: "EasyPaisa", style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.easypaisa.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.easypaisa)], ["Total Rec", getTotalReceiving(sheet.easypaisa)], ["Last Bal", extractLastBalance(sheet.easypaisa) || "-"]] }, layout: "lightHorizontalLines" }] },
-                        { width: "20%", stack: [{ text: "JazzCash", style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.jazzcash.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.jazzcash)], ["Total Rec", getTotalReceiving(sheet.jazzcash)], ["Last Bal", extractLastBalance(sheet.jazzcash) || "-"]] }, layout: "lightHorizontalLines" }] },
-                        { width: "20%", stack: [{ text: "EP Account", style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.epaccount.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.epaccount)], ["Total Rec", getTotalReceiving(sheet.epaccount)], ["Last Bal", extractLastBalance(sheet.epaccount) || "-"]] }, layout: "lightHorizontalLines" }] },
-                        { width: "20%", stack: [{ text: "JC Merchant", style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.jcaccount.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.jcaccount)], ["Total Rec", getTotalReceiving(sheet.jcaccount)], ["Last Bal", extractLastBalance(sheet.jcaccount) || "-"]] }, layout: "lightHorizontalLines" }] },
+                        { width: "20%", stack: [{ text: `UBL Omni (Op Balance - ${sheet.lastBalances.omni || "-"}) `, style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.omni.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.omni)], ["Total Rec", getTotalReceiving(sheet.omni)], ["Last Bal", extractLastBalance(sheet.omni) || "-"]] }, layout: "lightHorizontalLines" }] },
+                        { width: "20%", stack: [{ text: `EasyPaisa (Op Balance - ${sheet.lastBalances.easypaisa || "-"}) `, style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.easypaisa.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.easypaisa)], ["Total Rec", getTotalReceiving(sheet.easypaisa)], ["Last Bal", extractLastBalance(sheet.easypaisa) || "-"]] }, layout: "lightHorizontalLines" }] },
+                        { width: "20%", stack: [{ text: `JazzCash (Op Balance - ${sheet.lastBalances.jazzcash || "-"}) `, style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.jazzcash.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.jazzcash)], ["Total Rec", getTotalReceiving(sheet.jazzcash)], ["Last Bal", extractLastBalance(sheet.jazzcash) || "-"]] }, layout: "lightHorizontalLines" }] },
+                        { width: "20%", stack: [{ text: `EP Account (Op Balance - ${sheet.lastBalances.epaccount || "-"}) `, style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.epaccount.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.epaccount)], ["Total Rec", getTotalReceiving(sheet.epaccount)], ["Last Bal", extractLastBalance(sheet.epaccount) || "-"]] }, layout: "lightHorizontalLines" }] },
+                        { width: "20%", stack: [{ text: `JC Merchant (Op Balance - ${sheet.lastBalances.jcaccount || "-"}) `, style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.jcaccount.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.jcaccount)], ["Total Rec", getTotalReceiving(sheet.jcaccount)], ["Last Bal", extractLastBalance(sheet.jcaccount) || "-"]] }, layout: "lightHorizontalLines" }] },
                     ],
                     columnGap: 2,
                 },
@@ -793,11 +793,11 @@ const handleDownloadPDF = async () => {
                                 widths: ["65%", "35%"],
                                 body: [
                                     [{ text: "Cash Info", colSpan: 2, style: "tableHeader", alignment: "center" }, {}],
-                                    ["UBL Omni", getTotalSending(sheet.omni)],
-                                    ["EasyPaisa", getTotalSending(sheet.easypaisa)],
-                                    ["JazzCash", getTotalSending(sheet.jazzcash)],
-                                    ["EP Account", getTotalSending(sheet.epaccount)],
-                                    ["JC Account", getTotalSending(sheet.jcaccount)],
+                                    ["UBL Omni Sending", getTotalSending(sheet.omni)],
+                                    ["EasyPaisa Sending", getTotalSending(sheet.easypaisa)],
+                                    ["JazzCash Sending", getTotalSending(sheet.jazzcash)],
+                                    ["EP Account Sending", getTotalSending(sheet.epaccount)],
+                                    ["JC Account Sending", getTotalSending(sheet.jcaccount)],
                                     ["Recovery", recoveryTotal.value],
                                     ["EasyLoad", totalELoad.value],
                                     ["Extra", n(s.extra)],
@@ -1512,31 +1512,31 @@ const clearLocalStorage = () => {
                                 <th colspan="2">Cash Info</th>
                             </tr>
                             <tr>
-                                <td>UBL Omni</td>
+                                <td>UBL Omni Sending</td>
                                 <td>
                                     <input :value="getTotalSending(sheet.omni)" type="number" disabled />
                                 </td>
                             </tr>
                             <tr>
-                                <td>EasyPaisa</td>
+                                <td>EasyPaisa Sending</td>
                                 <td>
                                     <input :value="getTotalSending(sheet.easypaisa)" type="number" disabled />
                                 </td>
                             </tr>
                             <tr>
-                                <td>JazzCash</td>
+                                <td>JazzCash Sending</td>
                                 <td>
                                     <input :value="getTotalSending(sheet.jazzcash)" type="number" disabled />
                                 </td>
                             </tr>
                             <tr>
-                                <td>EP Account</td>
+                                <td>EP Account Sending</td>
                                 <td>
                                     <input :value="getTotalSending(sheet.epaccount)" type="number" disabled />
                                 </td>
                             </tr>
                             <tr>
-                                <td>JC M Account</td>
+                                <td>JC M Account Sending</td>
                                 <td>
                                     <input :value="getTotalSending(sheet.jcaccount)" type="number" disabled />
                                 </td>
