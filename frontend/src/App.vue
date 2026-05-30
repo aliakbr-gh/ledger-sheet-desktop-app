@@ -1,11 +1,21 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, reactive, watch, computed } from "vue";
 import CashModal from "./CashModal.vue";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import { Toaster, toast } from 'vue-sonner'
 import 'vue-sonner/style.css'
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
 import { SavePDF } from "../wailsjs/go/main/App";
+
+pdfMake.addVirtualFileSystem(pdfFonts.vfs as any);
+pdfMake.fonts = {
+    Roboto: {
+        normal: 'Roboto-Regular.ttf',
+        bold: 'Roboto-Regular.ttf',
+        italics: 'Roboto-Regular.ttf',
+        bolditalics: 'Roboto-Regular.ttf'
+    }
+};
 
 const DEBUG = false;
 
@@ -517,117 +527,288 @@ const cashTotal = computed(() => {
 });
 
 const handleDownloadPDF = async () => {
-    const element = document.getElementById("print-area");
-
-    if (!element) return;
-
-    const noPrintEls = document.querySelectorAll(".no-print");
-
-    noPrintEls.forEach((el) => {
-        (el as HTMLElement).style.display = "none";
-    });
-
-    element.classList.add("pdf-export");
-
-    await new Promise((resolve) => setTimeout(resolve, 200));
-
     try {
-        const canvas = await html2canvas(element, {
-            scale: 2, // good quality without huge file
-            useCORS: true,
-            backgroundColor: "#ffffff",
+        toast.info("Getting data ready for PDF generation...");
+        toast.info("Generating PDF, please wait...");
+        const s = sheet;
+        const n = (v: any) => Number(v) || 0;
 
-            // IMPORTANT
-            windowWidth: element.scrollWidth,
-            windowHeight: element.scrollHeight,
-
-            width: element.scrollWidth,
-            height: element.scrollHeight,
-
-            scrollX: 0,
-            scrollY: 0,
-
-            logging: false,
-        });
-
-        noPrintEls.forEach((el) => {
-            (el as HTMLElement).style.display = "";
-        });
-
-        const imgData = canvas.toDataURL("image/jpeg", 0.85);
-
-        const pdf = new jsPDF({
-            orientation: "landscape",
-            unit: "mm",
-            format: "a4",
-            compress: true,
-        });
-
-        // A4 landscape dimensions
-        const pdfWidth = 297;
-        const pdfHeight = 210;
-
-        // margins
-        const margin = 0;
-
-        const usableWidth = pdfWidth - margin * 2;
-        const usableHeight = pdfHeight - margin * 2;
-
-        // image dimensions
-        const imgWidth = canvas.width;
-        const imgHeight = canvas.height;
-
-        // fit image perfectly inside page
-        const ratio = usableWidth / imgWidth;
-        const finalWidth = usableWidth;
-        const finalHeight = imgHeight * ratio;
-
-        // center image
-        const x = (pdfWidth - finalWidth) / 2;
-        const y = (pdfHeight - finalHeight) / 2;
-
-        pdf.addImage(
-            imgData,
-            "JPEG",
-            x,
-            y,
-            finalWidth,
-            finalHeight,
-            undefined,
-            "FAST"
-        );
-
-        const now = new Date();
-        const day = String(now.getDate()).padStart(2, "0");
-        const month = String(now.getMonth() + 1).padStart(2, "0");
-        const year = now.getFullYear();
+        const today = new Date();
+        const day = String(today.getDate()).padStart(2, "0");
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const year = today.getFullYear();
 
         const fileName = `KMKCommunicationSheet-${day}-${month}-${year}.pdf`;
 
-        const pdfArrayBuffer = pdf.output("arraybuffer");
+        const docDefinition: any = {
+            pageSize: "A4",
+            pageOrientation: "portrait",
+            pageMargins: [10, 15, 10, 15],
 
-        await SavePDF(
-            fileName,
-            Array.from(new Uint8Array(pdfArrayBuffer))
-        );
+            defaultStyle: {
+                fontSize: 7.2
+            },
 
-        toast.success("PDF save successfully");
-    } catch (error: any) {
-        console.error(error);
+            styles: {
+                header: { fontSize: 15, bold: true, alignment: "center", margin: [0, 0, 0, 6] },
+                subheader: { fontSize: 9, bold: true, alignment: "center", decoration: "underline", margin: [0, 8, 0, 4] },
+                tableHeader: { bold: true, fillColor: "#e0e0e0", fontSize: 8 },
+                sectionHeader: {
+                    bold: true,
+                    fontSize: 8.5,
+                    fillColor: "#d3d3d3",
+                    color: "#000000",
+                    alignment: "center"
+                },
+                small: { fontSize: 7 },
+            },
 
-        noPrintEls.forEach((el) => {
-            (el as HTMLElement).style.display = "";
-        });
+            content: [
+                { text: "KMK COMMUNICATION", style: "header" },
 
-        toast.error("Error while saving pdf", error);
-    } finally {
-        element.classList.remove("pdf-export");
+                {
+                    columns: [
+                        { text: `Date: ${dateTime.value.date}`, alignment: "left", style: "small" },
+                        {
+                            text: dateTime.value.islamicDate?.replace(/[^\x00-\x7F]/g, "") || "Islamic Date",
+                            alignment: "center",
+                            style: "small"
+                        },
+                        { text: `Time: ${dateTime.value.time}`, alignment: "right", style: "small" },
+                    ],
+                    margin: [0, 0, 0, 8],
+                },
+
+                { text: "EASYLOAD & ACCOUNTS", style: "subheader" },
+
+                {
+                    columns: [
+                        {
+                            width: "48%",
+                            table: {
+                                widths: ["22%", "19%", "19%", "19%", "21%"],
+                                body: [
+                                    [{ text: "EasyLoad", colSpan: 5, style: "tableHeader", alignment: "center" }, {}, {}, {}, {}],
+                                    ["", "Telenor", "Jazz", "Ufone", "Zong"],
+                                    ["Opening", n(s.telenorOpeningBalance), n(s.jazzOpeningBalance), n(s.ufoneOpeningBalance), n(s.zongOpeningBalance)],
+                                    ["New", n(s.telenorNewBalance), n(s.jazzNewBalance), n(s.ufoneNewBalance), n(s.zongNewBalance)],
+                                    ["Rev", n(s.telenorReversalBalance), n(s.jazzReversalBalance), n(s.ufoneReversalBalance), n(s.zongReversalBalance)],
+                                    ["Total",
+                                        n(s.telenorOpeningBalance) + n(s.telenorNewBalance) + n(s.telenorReversalBalance),
+                                        n(s.jazzOpeningBalance) + n(s.jazzNewBalance) + n(s.jazzReversalBalance),
+                                        n(s.ufoneOpeningBalance) + n(s.ufoneNewBalance) + n(s.ufoneReversalBalance),
+                                        n(s.zongOpeningBalance) + n(s.zongNewBalance) + n(s.zongReversalBalance)
+                                    ],
+                                    ["Closing", n(s.telenorClosingBalance), n(s.jazzClosingBalance), n(s.ufoneClosingBalance), n(s.zongClosingBalance)],
+                                    ["Sell", getELoadSell("telenor"), getELoadSell("jazz"), getELoadSell("ufone"), getELoadSell("zong")],
+                                ],
+                            },
+                            layout: "lightHorizontalLines",
+                        },
+
+                        { width: "2%", text: "" },
+
+                        {
+                            width: "50%",
+                            stack: [
+                                {
+                                    table: {
+                                        widths: ["30%", "35%", "35%"],
+                                        body: [
+                                            [{ text: "Bank Accounts", colSpan: 3, style: "sectionHeader", alignment: "center" }, {}, {}],
+                                            ["Account No.", "265999891", "37300247"],
+                                            ["Balance", n(s.accountBalance265999891), n(s.accountBalance37300247)],
+                                            ["Deposit", n(s.deposit265999891), n(s.deposit37300247)],
+                                            ["Withdraw", n(s.withdrawl265999891), n(s.withdrawl37300247)],
+                                            ["Remaining Balance",
+                                                n(s.accountBalance265999891) + n(s.deposit265999891) - n(s.withdrawl265999891),
+                                                n(s.accountBalance37300247) + n(s.deposit37300247) - n(s.withdrawl37300247)
+                                            ],
+                                        ],
+                                    },
+                                    layout: "lightHorizontalLines",
+                                },
+                            ],
+                        },
+                    ],
+                },
+
+                { text: "\nRECOVERY, PURCHASING & EASYLOAD SUMMARY", style: "subheader" },
+
+                {
+                    columns: [
+                        {
+                            width: "26%",
+                            table: {
+                                widths: ["65%", "35%"],
+                                body: [
+                                    [{ text: "Recovery / Sell", colSpan: 2, style: "tableHeader", alignment: "center" }, {}],
+                                    ...sheet.recovery.map(r => [r.name || "-", n(r.amount)]),
+                                    ["Stamp Paper", n(s.stampPaperTotal)],
+                                    ["Total", { text: recoveryTotal.value, bold: true }],
+                                ],
+                            },
+                            layout: "lightHorizontalLines",
+                        },
+
+                        { width: "1%", text: "" },
+
+                        {
+                            width: "26%",
+                            table: {
+                                widths: ["65%", "35%"],
+                                body: [
+                                    [{ text: "Home Purchase", colSpan: 2, style: "tableHeader", alignment: "center" }, {}],
+                                    ...sheet.redBook.map(r => [r.name || "-", n(r.amount)]),
+                                    ["Total", { text: redBookTotal.value, bold: true }],
+                                ],
+                            },
+                            layout: "lightHorizontalLines",
+                        },
+
+                        { width: "1%", text: "" },
+
+                        {
+                            width: "23%",
+                            table: {
+                                widths: ["65%", "35%"],
+                                body: [
+                                    [{ text: "Purchasing", colSpan: 2, style: "tableHeader", alignment: "center" }, {}],
+                                    ["Omni/EP/JC Rec", getTotalReceiving(sheet.omni) + getTotalReceiving(sheet.easypaisa) + getTotalReceiving(sheet.jazzcash)],
+                                    ["EP/JC Acc", getTotalReceiving(sheet.epaccount) + getTotalReceiving(sheet.jcaccount)],
+                                    ["Manual", sheet.manualpurchasing.reduce((sum, i) => sum + n(i.amount), 0)],
+                                    ["Home", redBookTotal.value],
+                                    ["Total", { text: purchasingTotal.value, bold: true }],
+                                ],
+                            },
+                            layout: "lightHorizontalLines",
+                        },
+
+                        { width: "1%", text: "" },
+
+                        {
+                            width: "23%",
+                            table: {
+                                widths: ["50%", "50%"],
+                                body: [
+                                    [{ text: "EasyLoad Summary", colSpan: 2, style: "tableHeader", alignment: "center" }, {}],
+                                    ["Telenor", getELoadSell("telenor")],
+                                    ["Jazz", getELoadSell("jazz")],
+                                    ["Ufone", getELoadSell("ufone")],
+                                    ["Zong", getELoadSell("zong")],
+                                    ["Total", { text: totalELoad.value, bold: true }],
+                                ],
+                            },
+                            layout: "lightHorizontalLines",
+                        },
+                    ],
+                },
+
+                { text: "\nSTATEMENTS", style: "subheader" },
+
+                {
+                    columns: [
+                        { width: "20%", stack: [{ text: "UBL Omni", style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.omni.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.omni)], ["Total Rec", getTotalReceiving(sheet.omni)], ["Last Bal", extractLastBalance(sheet.omni) || "-"]] }, layout: "lightHorizontalLines" }] },
+                        { width: "20%", stack: [{ text: "EasyPaisa", style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.easypaisa.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.easypaisa)], ["Total Rec", getTotalReceiving(sheet.easypaisa)], ["Last Bal", extractLastBalance(sheet.easypaisa) || "-"]] }, layout: "lightHorizontalLines" }] },
+                        { width: "20%", stack: [{ text: "JazzCash", style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.jazzcash.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.jazzcash)], ["Total Rec", getTotalReceiving(sheet.jazzcash)], ["Last Bal", extractLastBalance(sheet.jazzcash) || "-"]] }, layout: "lightHorizontalLines" }] },
+                        { width: "20%", stack: [{ text: "EP Account", style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.epaccount.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.epaccount)], ["Total Rec", getTotalReceiving(sheet.epaccount)], ["Last Bal", extractLastBalance(sheet.epaccount) || "-"]] }, layout: "lightHorizontalLines" }] },
+                        { width: "20%", stack: [{ text: "JC Merchant", style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.jcaccount.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.jcaccount)], ["Total Rec", getTotalReceiving(sheet.jcaccount)], ["Last Bal", extractLastBalance(sheet.jcaccount) || "-"]] }, layout: "lightHorizontalLines" }] },
+                    ],
+                    columnGap: 3,
+                },
+
+                { text: "\nCASH SUMMARY", style: "subheader" },
+
+                {
+                    columns: [
+                        {
+                            width: "33%",
+                            table: {
+                                widths: ["28%", "22%", "8%", "42%"],
+                                body: [
+                                    [{ text: "Cash Detail", colSpan: 4, style: "tableHeader", alignment: "center" }, {}, {}, {}],
+                                    ["Denom", "Qty", "=", "Amount"],
+                                    ["5000", n(s.cash5000), "=", 5000 * n(s.cash5000)],
+                                    ["1000", n(s.cash1000), "=", 1000 * n(s.cash1000)],
+                                    ["500", n(s.cash500), "=", 500 * n(s.cash500)],
+                                    ["100", n(s.cash100), "=", 100 * n(s.cash100)],
+                                    ["50", n(s.cash50), "=", 50 * n(s.cash50)],
+                                    ["20", n(s.cash20), "=", 20 * n(s.cash20)],
+                                    ["10", n(s.cash10), "=", 10 * n(s.cash10)],
+                                    ["5", n(s.cash5), "=", 5 * n(s.cash5)],
+                                    [{ text: "TOTAL", bold: true, colSpan: 3 }, {}, {}, { text: cashTotal.value, bold: true }],
+                                ],
+                            },
+                            layout: "lightHorizontalLines",
+                        },
+
+                        { width: "1%", text: "" },
+
+                        {
+                            width: "33%",
+                            table: {
+                                widths: ["50%", "50%"],
+                                body: [
+                                    [{ text: "Analytics", colSpan: 2, style: "tableHeader", alignment: "center" }, {}],
+                                    ["Previous Cash", n(s.previousCash)],
+                                    ["Today Cash", cashInfoTotal.value],
+                                    ["Total Cash", n(s.previousCash) + cashInfoTotal.value],
+                                    ["Purchasing", purchasingTotal.value],
+                                    ["Remaining", (n(s.previousCash) + cashInfoTotal.value) - purchasingTotal.value],
+                                    [{ text: "DIFFERENCE", bold: true }, { text: ((n(s.previousCash) + cashInfoTotal.value) - purchasingTotal.value - cashTotal.value), bold: true }],
+                                ],
+                            },
+                            layout: "lightHorizontalLines",
+                        },
+
+                        { width: "1%", text: "" },
+
+                        {
+                            width: "33%",
+                            table: {
+                                widths: ["65%", "35%"],
+                                body: [
+                                    [{ text: "Cash Info", colSpan: 2, style: "tableHeader", alignment: "center" }, {}],
+                                    ["UBL Omni", getTotalSending(sheet.omni)],
+                                    ["EasyPaisa", getTotalSending(sheet.easypaisa)],
+                                    ["JazzCash", getTotalSending(sheet.jazzcash)],
+                                    ["EP Account", getTotalSending(sheet.epaccount)],
+                                    ["JC Account", getTotalSending(sheet.jcaccount)],
+                                    ["Recovery", recoveryTotal.value],
+                                    ["EasyLoad", totalELoad.value],
+                                    ["Extra", n(s.extra)],
+                                    ["Total", cashInfoTotal.value],
+                                ],
+                            },
+                            layout: "lightHorizontalLines",
+                        },
+                    ],
+                    columnGap: 4,
+                },
+            ],
+        };
+
+        const pdf = pdfMake.createPdf(docDefinition);
+        const base64 = await pdf.getBase64();
+
+        const byteCharacters = atob(base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+
+        await SavePDF(fileName, Array.from(byteArray));
+        toast.info(`File: ${fileName}`);
+        toast.success("PDF generated and saved successfully!");
+    } catch (err: any) {
+        console.error("PDF Error:", err);
+        toast.error(`Error generating PDF: ${err.message || err}`);
     }
 };
 
 const clearLocalStorage = () => {
     localStorage.clear();
-
     toast.success("Local storage cleared");
 };
 </script>
@@ -1367,5 +1548,5 @@ const clearLocalStorage = () => {
     </div>
 
     <CashModal v-model="showCashModal" />
-    <Toaster position="top-center" richColors />
+    <Toaster position="top-center" richColors expand :visible-toasts="10" />
 </template>
