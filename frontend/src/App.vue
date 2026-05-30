@@ -6,11 +6,11 @@ import 'vue-sonner/style.css'
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import { SavePDF } from "../wailsjs/go/main/App";
-import urduFontBase64 from "./assets/fonts/JameelNooriNastaleeq.base64.ts";
+import urduFontBase64 from "./assets/fonts/NotoNaskhArabic-Bold.base64.ts";
 
 pdfMake.addVirtualFileSystem(pdfFonts.vfs as any);
 pdfMake.addVirtualFileSystem({
-    "JameelNooriNastaleeq.ttf": urduFontBase64,
+    "NotoNaskhArabic-Bold.ttf": urduFontBase64,
 });
 
 pdfMake.fonts = {
@@ -21,10 +21,10 @@ pdfMake.fonts = {
         bolditalics: 'Roboto-Regular.ttf'
     },
     Urdu: {
-        normal: "JameelNooriNastaleeq.ttf",
-        bold: "JameelNooriNastaleeq.ttf",
-        italics: "JameelNooriNastaleeq.ttf",
-        bolditalics: "JameelNooriNastaleeq.ttf"
+        normal: "NotoNaskhArabic-Bold.ttf",
+        bold: "NotoNaskhArabic-Bold.ttf",
+        italics: "NotoNaskhArabic-Bold.ttf",
+        bolditalics: "NotoNaskhArabic-Bold.ttf"
     }
 };
 
