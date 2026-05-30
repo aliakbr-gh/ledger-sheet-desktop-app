@@ -6,14 +6,25 @@ import 'vue-sonner/style.css'
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import { SavePDF } from "../wailsjs/go/main/App";
+import urduFontBase64 from "./assets/fonts/JameelNooriNastaleeq.base64.ts";
 
 pdfMake.addVirtualFileSystem(pdfFonts.vfs as any);
+pdfMake.addVirtualFileSystem({
+    "JameelNooriNastaleeq.ttf": urduFontBase64,
+});
+
 pdfMake.fonts = {
     Roboto: {
         normal: 'Roboto-Regular.ttf',
         bold: 'Roboto-Regular.ttf',
         italics: 'Roboto-Regular.ttf',
         bolditalics: 'Roboto-Regular.ttf'
+    },
+    Urdu: {
+        normal: "JameelNooriNastaleeq.ttf",
+        bold: "JameelNooriNastaleeq.ttf",
+        italics: "JameelNooriNastaleeq.ttf",
+        bolditalics: "JameelNooriNastaleeq.ttf"
     }
 };
 
@@ -319,6 +330,7 @@ const isPureNumber = (val: string | number | null | undefined) => {
 const dateTime = ref({
     date: "",
     islamicDate: "",
+    pdfIslamicDate: "",
     time: "",
 });
 
@@ -351,8 +363,8 @@ const updateDateTime = () => {
     const year = parts.find(p => p.type === "year")?.value || "";
     const weekday = parts.find(p => p.type === "weekday")?.value || "";
 
-    dateTime.value.islamicDate =
-        `${day} ${month} ${year} ہجری بروز ${weekday}`;
+    dateTime.value.islamicDate = `${day} ${month} ${year} ہجری بروز ${weekday}`;
+    dateTime.value.pdfIslamicDate = `${weekday} بروز ہجری ${year} ${month} ${day}`;
 
     // Time
     dateTime.value.time = now.toLocaleTimeString("en-US", {
@@ -364,6 +376,19 @@ const updateDateTime = () => {
 let interval: number;
 
 onMounted(() => {
+    const style = document.createElement("style");
+
+    style.innerHTML = `
+        @font-face {
+            font-family: 'Urdu';
+            src: url(data:font/truetype;charset=utf-8;base64,${urduFontBase64}) format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+    `;
+
+    document.head.appendChild(style);
+
     updateDateTime();
 
     interval = window.setInterval(() => {
@@ -568,9 +593,10 @@ const handleDownloadPDF = async () => {
                     columns: [
                         { text: `Date: ${dateTime.value.date}`, alignment: "left", style: "small" },
                         {
-                            text: dateTime.value.islamicDate?.replace(/[^\x00-\x7F]/g, "") || "Islamic Date",
+                            text: dateTime.value.pdfIslamicDate,
                             alignment: "center",
-                            style: "small"
+                            style: "small",
+                            font: "Urdu",
                         },
                         { text: `Time: ${dateTime.value.time}`, alignment: "right", style: "small" },
                     ],
@@ -827,7 +853,9 @@ const clearLocalStorage = () => {
                 <div class="time-actions-container">
                     <div>
                         <h3 id="current-date">{{ dateTime.date }}</h3>
-                        <h3 id="current-islamic-date" dir="rtl">{{ dateTime.islamicDate }}</h3>
+                        <h3 id="current-islamic-date" dir="rtl" style="font-family: Urdu; word-spacing: 5px;">
+                            {{ dateTime.islamicDate }}
+                        </h3>
                     </div>
                     <h3 id="current-time">{{ dateTime.time }}</h3>
                     <div class="actions no-print">
