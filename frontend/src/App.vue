@@ -568,7 +568,7 @@ const handleDownloadPDF = async () => {
         const docDefinition: any = {
             pageSize: "A4",
             pageOrientation: "portrait",
-            pageMargins: [10, 15, 10, 15],
+            pageMargins: [20, 25, 20, 25],
 
             defaultStyle: {
                 fontSize: 7.2
@@ -855,7 +855,7 @@ const clearLocalStorage = () => {
                 <div class="time-actions-container">
                     <div>
                         <h3 id="current-date">{{ dateTime.date }}</h3>
-                        <h3 id="current-islamic-date" dir="rtl" style="font-family: Urdu; word-spacing: 5px;">
+                        <h3 id="current-islamic-date" dir="rtl" style="font-family: Urdu;">
                             {{ dateTime.islamicDate }}
                         </h3>
                     </div>

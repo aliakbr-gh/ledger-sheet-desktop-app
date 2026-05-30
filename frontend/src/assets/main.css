@@ -52,31 +52,9 @@ input:disabled {
     margin-right: 5px;
 }
 
-.my {
-    margin-top: 5px;
-    margin-bottom: 5px;
-}
-
-.space-x {
-    margin-left: 10px;
-    margin-right: 10px;
-}
-
 .space-y {
     margin-top: 10px;
     margin-bottom: 10px;
-}
-
-.text-sm {
-    font-size: 15px;
-}
-
-.text-lg {
-    font-size: 25px;
-}
-
-.text-center {
-    text-align: center;
 }
 
 .button {
