@@ -548,7 +548,7 @@ const handleDownloadPDF = async () => {
             },
 
             styles: {
-                header: { fontSize: 12, bold: true, alignment: "center", margin: [0, 0, 0, 1] },
+                header: { fontSize: 12, bold: true, alignment: "center", margin: [0, 0, 0, 2] },
                 subheader: { fontSize: 8, bold: true, alignment: "center", decoration: "underline", margin: [0, 4, 0, 3] },
                 tableHeader: { bold: true, fillColor: "#e0e0e0", fontSize: 7 },
                 sectionHeader: {
