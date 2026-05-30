@@ -528,8 +528,6 @@ const cashTotal = computed(() => {
 
 const handleDownloadPDF = async () => {
     try {
-        toast.info("Getting data ready for PDF generation...");
-        toast.info("Generating PDF, please wait...");
         const s = sheet;
         const n = (v: any) => Number(v) || 0;
 
@@ -799,8 +797,7 @@ const handleDownloadPDF = async () => {
         const byteArray = new Uint8Array(byteNumbers);
 
         await SavePDF(fileName, Array.from(byteArray));
-        toast.info(`File: ${fileName}`);
-        toast.success("PDF generated and saved successfully!");
+        toast.success(`File: ${fileName} PDF generated and saved successfully!`);
     } catch (err: any) {
         console.error("PDF Error:", err);
         toast.error(`Error generating PDF: ${err.message || err}`);
