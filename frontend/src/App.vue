@@ -669,7 +669,9 @@ const handleDownloadPDF = async () => {
                                 widths: ["65%", "35%"],
                                 body: [
                                     [{ text: "Recovery / Sell", colSpan: 2, style: "tableHeader", alignment: "center" }, {}],
-                                    ...sheet.recovery.map(r => [r.name || "-", n(r.amount)]),
+                                    ...sheet.recovery
+                                        .filter(r => r.name || r.amount != null)
+                                        .map(r => [r.name || "-", n(r.amount)]),
                                     ["Stamp Paper", n(s.stampPaperTotal)],
                                     ["Total", { text: recoveryTotal.value, bold: true }],
                                 ],
@@ -684,8 +686,8 @@ const handleDownloadPDF = async () => {
                             table: {
                                 widths: ["65%", "35%"],
                                 body: [
-                                    [{ text: "Home Purchase", colSpan: 2, style: "tableHeader", alignment: "center" }, {}],
-                                    ...sheet.redBook.map(r => [r.name || "-", n(r.amount)]),
+                                    [{ text: "Home Purchasing", colSpan: 2, style: "tableHeader", alignment: "center" }, {}],
+                                    ...sheet.redBook.filter(r => r.name || r.amount != null).map(r => [r.name || "-", n(r.amount)]),
                                     ["Total", { text: redBookTotal.value, bold: true }],
                                 ],
                             },
@@ -702,8 +704,10 @@ const handleDownloadPDF = async () => {
                                     [{ text: "Purchasing", colSpan: 2, style: "tableHeader", alignment: "center" }, {}],
                                     ["Omni/EP/JC Rec", getTotalReceiving(sheet.omni) + getTotalReceiving(sheet.easypaisa) + getTotalReceiving(sheet.jazzcash)],
                                     ["EP/JC Acc", getTotalReceiving(sheet.epaccount) + getTotalReceiving(sheet.jcaccount)],
-                                    ["Manual", sheet.manualpurchasing.reduce((sum, i) => sum + n(i.amount), 0)],
-                                    ["Home", redBookTotal.value],
+                                    ...sheet.manualpurchasing
+                                        .filter((item) => item.name || item.amount != null)
+                                        .map((item, index) => [item.name || `Manual ${index + 1}`, n(item.amount)]),
+                                    ["Home Purchasing", redBookTotal.value],
                                     ["Total", { text: purchasingTotal.value, bold: true }],
                                 ],
                             },
@@ -734,11 +738,11 @@ const handleDownloadPDF = async () => {
 
                 {
                     columns: [
-                        { width: "20%", stack: [{ text: `UBL Omni (Op Balance - ${sheet.lastBalances.omni || "-"}) `, style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.omni.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.omni)], ["Total Rec", getTotalReceiving(sheet.omni)], ["Last Bal", extractLastBalance(sheet.omni) || "-"]] }, layout: "lightHorizontalLines" }] },
-                        { width: "20%", stack: [{ text: `EasyPaisa (Op Balance - ${sheet.lastBalances.easypaisa || "-"}) `, style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.easypaisa.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.easypaisa)], ["Total Rec", getTotalReceiving(sheet.easypaisa)], ["Last Bal", extractLastBalance(sheet.easypaisa) || "-"]] }, layout: "lightHorizontalLines" }] },
-                        { width: "20%", stack: [{ text: `JazzCash (Op Balance - ${sheet.lastBalances.jazzcash || "-"}) `, style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.jazzcash.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.jazzcash)], ["Total Rec", getTotalReceiving(sheet.jazzcash)], ["Last Bal", extractLastBalance(sheet.jazzcash) || "-"]] }, layout: "lightHorizontalLines" }] },
-                        { width: "20%", stack: [{ text: `EP Account (Op Balance - ${sheet.lastBalances.epaccount || "-"}) `, style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.epaccount.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.epaccount)], ["Total Rec", getTotalReceiving(sheet.epaccount)], ["Last Bal", extractLastBalance(sheet.epaccount) || "-"]] }, layout: "lightHorizontalLines" }] },
-                        { width: "20%", stack: [{ text: `JC Merchant (Op Balance - ${sheet.lastBalances.jcaccount || "-"}) `, style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.jcaccount.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.jcaccount)], ["Total Rec", getTotalReceiving(sheet.jcaccount)], ["Last Bal", extractLastBalance(sheet.jcaccount) || "-"]] }, layout: "lightHorizontalLines" }] },
+                        { width: "20%", stack: [{ text: `UBL Omni ${sheet.lastBalances.omni ? `(Op Bal - ${sheet.lastBalances.omni})` : ""}`, style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.omni.filter(r => r.sending || r.receiving).map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.omni)], ["Total Rec", getTotalReceiving(sheet.omni)], ["Last Bal", extractLastBalance(sheet.omni) || "-"]] }, layout: "lightHorizontalLines" }] },
+                        { width: "20%", stack: [{ text: `EasyPaisa ${sheet.lastBalances.easypaisa ? `(Op Bal - ${sheet.lastBalances.easypaisa})` : ""}`, style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.easypaisa.filter(r => r.sending || r.receiving).map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.easypaisa)], ["Total Rec", getTotalReceiving(sheet.easypaisa)], ["Last Bal", extractLastBalance(sheet.easypaisa) || "-"]] }, layout: "lightHorizontalLines" }] },
+                        { width: "20%", stack: [{ text: `JazzCash ${sheet.lastBalances.jazzcash ? `(Op Bal - ${sheet.lastBalances.jazzcash})` : ""}`, style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.jazzcash.filter(r => r.sending || r.receiving).map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.jazzcash)], ["Total Rec", getTotalReceiving(sheet.jazzcash)], ["Last Bal", extractLastBalance(sheet.jazzcash) || "-"]] }, layout: "lightHorizontalLines" }] },
+                        { width: "20%", stack: [{ text: `EP Account ${sheet.lastBalances.epaccount ? `(Op Bal - ${sheet.lastBalances.epaccount})` : ""}`, style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.epaccount.filter(r => r.sending || r.receiving).map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.epaccount)], ["Total Rec", getTotalReceiving(sheet.epaccount)], ["Last Bal", extractLastBalance(sheet.epaccount) || "-"]] }, layout: "lightHorizontalLines" }] },
+                        { width: "20%", stack: [{ text: `JC Merchant ${sheet.lastBalances.jcaccount ? `(Op Bal - ${sheet.lastBalances.jcaccount})` : ""}`, style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.jcaccount.filter(r => r.sending || r.receiving).map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.jcaccount)], ["Total Rec", getTotalReceiving(sheet.jcaccount)], ["Last Bal", extractLastBalance(sheet.jcaccount) || "-"]] }, layout: "lightHorizontalLines" }] },
                     ],
                     columnGap: 2,
                 },
