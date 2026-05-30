@@ -191,6 +191,7 @@ const sheet = reactive<Sheet>({
 });
 
 const showCashModal = ref(false);
+const showClearSheetModal = ref(false);
 
 const savedSheet = localStorage.getItem("sheet");
 
@@ -220,7 +221,8 @@ watch(
     }
 );
 
-const clearSheet = () => {
+const confirmClearSheet = () => {
+    showClearSheetModal.value = false;
 
     sheet.previousCash = cashTotal.value;
 
@@ -866,7 +868,7 @@ const clearLocalStorage = () => {
                         <button class="button" @click="handleDownloadPDF">
                             Save PDF
                         </button>
-                        <button class="button-danger" @click="clearSheet">
+                        <button class="button-danger" @click="showClearSheetModal = true">
                             Clear Sheet
                         </button>
                         <button v-if="DEBUG" class="button-danger" @click="clearLocalStorage">
@@ -1572,6 +1574,66 @@ const clearLocalStorage = () => {
         </div>
     </div>
 
+    <div v-if="showClearSheetModal" class="modal-overlay">
+        <div class="modal-box">
+            <h2>⚠️ Clear Sheet ⚠️</h2>
+
+            <p>
+                Are you sure you want to clear the sheet?
+            </p>
+
+            <div class="modal-actions">
+                <button class="button" @click="showClearSheetModal = false">
+                    Cancel
+                </button>
+
+                <button class="button-danger" @click="confirmClearSheet">
+                    Yes, Clear It!
+                </button>
+            </div>
+        </div>
+    </div>
     <CashModal v-model="showCashModal" />
     <Toaster position="top-center" richColors expand :visible-toasts="10" />
 </template>
+
+<style scoped>
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-box {
+    background: white;
+    padding: 12px;
+    border-radius: 12px;
+    width: 500px;
+    max-width: 90%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.modal-box h2 {
+    text-align: center;
+}
+
+.modal-box p {
+    font-weight: 500;
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+.modal-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.modal-actions button {
+    font-size: 1rem;
+}
+</style>
