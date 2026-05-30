@@ -548,12 +548,12 @@ const handleDownloadPDF = async () => {
             },
 
             styles: {
-                header: { fontSize: 15, bold: true, alignment: "center", margin: [0, 0, 0, 6] },
-                subheader: { fontSize: 9, bold: true, alignment: "center", decoration: "underline", margin: [0, 8, 0, 4] },
-                tableHeader: { bold: true, fillColor: "#e0e0e0", fontSize: 8 },
+                header: { fontSize: 12, bold: true, alignment: "center", margin: [0, 0, 0, 1] },
+                subheader: { fontSize: 8, bold: true, alignment: "center", decoration: "underline", margin: [0, 4, 0, 3] },
+                tableHeader: { bold: true, fillColor: "#e0e0e0", fontSize: 7 },
                 sectionHeader: {
                     bold: true,
-                    fontSize: 8.5,
+                    fontSize: 7,
                     fillColor: "#d3d3d3",
                     color: "#000000",
                     alignment: "center"
@@ -574,7 +574,7 @@ const handleDownloadPDF = async () => {
                         },
                         { text: `Time: ${dateTime.value.time}`, alignment: "right", style: "small" },
                     ],
-                    margin: [0, 0, 0, 8],
+                    margin: [0, 0, 0, 3],
                 },
 
                 { text: "EASYLOAD & ACCOUNTS", style: "subheader" },
@@ -712,7 +712,7 @@ const handleDownloadPDF = async () => {
                         { width: "20%", stack: [{ text: "EP Account", style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.epaccount.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.epaccount)], ["Total Rec", getTotalReceiving(sheet.epaccount)], ["Last Bal", extractLastBalance(sheet.epaccount) || "-"]] }, layout: "lightHorizontalLines" }] },
                         { width: "20%", stack: [{ text: "JC Merchant", style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.jcaccount.map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.jcaccount)], ["Total Rec", getTotalReceiving(sheet.jcaccount)], ["Last Bal", extractLastBalance(sheet.jcaccount) || "-"]] }, layout: "lightHorizontalLines" }] },
                     ],
-                    columnGap: 3,
+                    columnGap: 2,
                 },
 
                 { text: "\nCASH SUMMARY", style: "subheader" },
@@ -781,7 +781,7 @@ const handleDownloadPDF = async () => {
                             layout: "lightHorizontalLines",
                         },
                     ],
-                    columnGap: 4,
+                    columnGap: 3,
                 },
             ],
         };
