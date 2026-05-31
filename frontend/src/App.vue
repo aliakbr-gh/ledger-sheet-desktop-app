@@ -236,12 +236,12 @@ const confirmClearSheet = () => {
     sheet.ufoneNewBalance = null;
     sheet.zongNewBalance = null;
 
-    sheet.telenorReversalBalance = null,
-        sheet.jazzReversalBalance = null,
-        sheet.ufoneReversalBalance = null,
-        sheet.zongReversalBalance = null,
+    sheet.telenorReversalBalance = null;
+    sheet.jazzReversalBalance = null;
+    sheet.ufoneReversalBalance = null;
+    sheet.zongReversalBalance = null;
 
-        sheet.accountBalance265999891 =
+    sheet.accountBalance265999891 =
         n(sheet.accountBalance265999891) +
         n(sheet.deposit265999891) -
         n(sheet.withdrawl265999891);
@@ -251,30 +251,23 @@ const confirmClearSheet = () => {
         n(sheet.deposit37300247) -
         n(sheet.withdrawl37300247);
 
-    sheet.deposit265999891 = null,
-        sheet.deposit37300247 = null,
+    sheet.deposit265999891 = null;
+    sheet.deposit37300247 = null;
+    sheet.withdrawl265999891 = null;
+    sheet.withdrawl37300247 = null;
 
-        sheet.withdrawl265999891 = null,
-        sheet.withdrawl37300247 = null,
-
-        sheet.lastBalances.omni = extractLastBalance(sheet.omni);
-    sheet.lastBalances.easypaisa = extractLastBalance(sheet.easypaisa);
-    sheet.lastBalances.jazzcash = extractLastBalance(sheet.jazzcash);
-    sheet.lastBalances.epaccount = extractLastBalance(sheet.epaccount);
-    sheet.lastBalances.jcaccount = extractLastBalance(sheet.jcaccount);
-
-    const shift = (type: "telenor" | "jazz" | "ufone" | "zong") => {
-        const closing = sheet[`${type}ClosingBalance`];
-
-        if (closing !== null && closing !== undefined) {
-            sheet[`${type}OpeningBalance`] = closing;
+    const updateLastBalance = (key: keyof typeof sheet.lastBalances, entries: any[]) => {
+        const extracted = extractLastBalance(entries);
+        if (extracted !== null) {
+            sheet.lastBalances[key] = extracted;
         }
     };
 
-    shift("telenor");
-    shift("jazz");
-    shift("ufone");
-    shift("zong");
+    updateLastBalance('omni', sheet.omni);
+    updateLastBalance('easypaisa', sheet.easypaisa);
+    updateLastBalance('jazzcash', sheet.jazzcash);
+    updateLastBalance('epaccount', sheet.epaccount);
+    updateLastBalance('jcaccount', sheet.jcaccount);
 
     const clearEntries = (arr: any[]) => {
         arr.forEach((item) => {
@@ -305,10 +298,9 @@ const confirmClearSheet = () => {
     });
 
     sheet.stampPaperTotal = null;
-
     sheet.extra = null;
 
-    toast.success("Sheet clear successfully");
+    toast.success("Sheet cleared successfully");
 };
 
 // Helper Functions
