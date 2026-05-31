@@ -567,7 +567,7 @@ const handleDownloadPDF = async () => {
             },
 
             styles: {
-                header: { fontSize: 12, bold: true, alignment: "center", margin: [0, 0, 0, 2] },
+                header: { fontSize: 12, bold: true, alignment: "center", margin: [0, 0, 0, 2], decoration: "underline" },
                 subheader: { fontSize: 8, bold: true, alignment: "center", decoration: "underline", margin: [0, 4, 0, 3] },
                 tableHeader: { bold: true, fillColor: "#e0e0e0", fontSize: 7 },
                 sectionHeader: {
@@ -589,7 +589,7 @@ const handleDownloadPDF = async () => {
                         {
                             text: dateTime.value.pdfIslamicDate,
                             alignment: "center",
-                            style: "small",
+                            fontSize: 10,
                             font: "Urdu",
                         },
                         { text: `Time: ${dateTime.value.time}`, alignment: "right", style: "small" },
@@ -736,7 +736,7 @@ const handleDownloadPDF = async () => {
                         { width: "20%", stack: [{ text: `EP Account ${sheet.lastBalances.epaccount ? `(Op Bal - ${sheet.lastBalances.epaccount})` : ""}`, style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.epaccount.filter(r => r.sending || r.receiving).map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.epaccount)], ["Total Rec", getTotalReceiving(sheet.epaccount)], ["Last Bal", extractLastBalance(sheet.epaccount) || "-"]] }, layout: "lightHorizontalLines" }] },
                         { width: "20%", stack: [{ text: `JC Merchant ${sheet.lastBalances.jcaccount ? `(Op Bal - ${sheet.lastBalances.jcaccount})` : ""}`, style: "sectionHeader", margin: [0, 0, 0, 4] }, { table: { widths: ["*", "*"], body: [["Sending", "Receiving"], ...sheet.jcaccount.filter(r => r.sending || r.receiving).map(r => [r.sending || "", r.receiving || ""]), ["Total Send", getTotalSending(sheet.jcaccount)], ["Total Rec", getTotalReceiving(sheet.jcaccount)], ["Last Bal", extractLastBalance(sheet.jcaccount) || "-"]] }, layout: "lightHorizontalLines" }] },
                     ],
-                    columnGap: 2,
+                    columnGap: 10,
                 },
 
                 { text: "\nCASH SUMMARY", style: "subheader" },
