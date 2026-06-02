@@ -9,7 +9,7 @@ const emit = defineEmits<{
     (e: "update:modelValue", value: boolean): void;
 }>();
 
-const amounts = reactive<(number | null)[]>(Array(10).fill(null));
+const amounts = reactive<(number | null)[]>(Array(8).fill(null));
 
 const cash = reactive({
     cash5000: null as number | null,
@@ -170,7 +170,7 @@ const closeModal = () => {
     color: white;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 12px;
 }
 
 .content {
@@ -212,7 +212,7 @@ const closeModal = () => {
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 1rem;
+    font-size: 0.8rem;
 }
 
 .footer-row {
@@ -229,7 +229,7 @@ const closeModal = () => {
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.8rem;
 }
 
 .clear-btn:hover {
