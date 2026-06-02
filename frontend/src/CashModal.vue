@@ -148,7 +148,7 @@ const closeModal = () => {
     max-width: 95vw;
     background: white;
     border-radius: 12px;
-    padding: 20px;
+    padding: 10px;
 }
 
 .modal-header {
@@ -182,7 +182,7 @@ const closeModal = () => {
 .card {
     border: 1px solid #ddd;
     border-radius: 10px;
-    padding: 15px;
+    padding: 7px;
     background: white;
 }
 
@@ -199,7 +199,7 @@ const closeModal = () => {
 .table th,
 .table td {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 2px;
 }
 
 .table th {
@@ -209,7 +209,7 @@ const closeModal = () => {
 .table input {
     width: 100%;
     box-sizing: border-box;
-    padding: 8px;
+    padding: 5px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 0.8rem;
@@ -247,7 +247,7 @@ const closeModal = () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px;
+    padding: 8px;
     background: #f7f7f7;
     border-radius: 6px;
 }
