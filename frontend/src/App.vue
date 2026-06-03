@@ -1471,7 +1471,7 @@ const clearLocalStorage = () => {
                                 <td style="font-size: 1.5rem;">Difference</td>
                                 <td>
                                     <input style="font-size: 1.1rem;"
-                                        :value="((n(sheet.previousCash) + cashInfoTotal) - purchasingTotal) - cashTotal"
+                                        :value="(cashTotal - (n(sheet.previousCash) + cashInfoTotal) - purchasingTotal)"
                                         type="number" readonly />
                                 </td>
                             </tr>
