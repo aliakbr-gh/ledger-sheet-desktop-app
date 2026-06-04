@@ -202,11 +202,12 @@ if (savedSheet) {
 
     Object.assign(sheet, parsed);
 
-    if (!parsed.recovery) {
-        sheet.recovery = Array.from({ length: 10 }, () => ({
-            name: "",
-            amount: null,
-        }));
+    if (sheet.lastBalances) {
+        sheet.lastBalances.omni = Number(sheet.lastBalances.omni) || null;
+        sheet.lastBalances.easypaisa = Number(sheet.lastBalances.easypaisa) || null;
+        sheet.lastBalances.jazzcash = Number(sheet.lastBalances.jazzcash) || null;
+        sheet.lastBalances.epaccount = Number(sheet.lastBalances.epaccount) || null;
+        sheet.lastBalances.jcaccount = Number(sheet.lastBalances.jcaccount) || null;
     }
 }
 
@@ -1171,7 +1172,7 @@ const clearLocalStorage = () => {
                             <tr>
                                 <td>Balance</td>
                                 <td>
-                                    <input :value="sheet.lastBalances.omni" type="number" disabled />
+                                    <input v-model.number="sheet.lastBalances.omni" type="number" />
                                 </td>
                             </tr>
                             <tr>
@@ -1218,7 +1219,7 @@ const clearLocalStorage = () => {
                             <tr>
                                 <td>Balance</td>
                                 <td>
-                                    <input :value="sheet.lastBalances.easypaisa" type="number" disabled />
+                                    <input v-model.number="sheet.lastBalances.easypaisa" type="number" />
                                 </td>
                             </tr>
 
@@ -1269,7 +1270,7 @@ const clearLocalStorage = () => {
                             <tr>
                                 <td>Balance</td>
                                 <td>
-                                    <input :value="sheet.lastBalances.jazzcash" type="number" disabled />
+                                    <input v-model.number="sheet.lastBalances.jazzcash" type="number" />
                                 </td>
                             </tr>
 
@@ -1320,7 +1321,7 @@ const clearLocalStorage = () => {
                             <tr>
                                 <td>Balance</td>
                                 <td>
-                                    <input :value="sheet.lastBalances.epaccount" type="number" disabled />
+                                    <input v-model.number="sheet.lastBalances.epaccount" type="number" />
                                 </td>
                             </tr>
 
@@ -1370,7 +1371,7 @@ const clearLocalStorage = () => {
                             <tr>
                                 <td>Balance</td>
                                 <td>
-                                    <input :value="sheet.lastBalances.jcaccount" type="number" disabled />
+                                    <input v-model.number="sheet.lastBalances.jcaccount" type="number" />
                                 </td>
                             </tr>
 
