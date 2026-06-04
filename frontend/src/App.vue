@@ -691,7 +691,7 @@ const handleDownloadPDF = async () => {
                     ],
                 },
 
-                { text: "\nRECOVERY, PURCHASING & EASYLOAD SUMMARY", style: "subheader" },
+                { text: "\nRECOVERY & PURCHASING", style: "subheader" },
 
                 {
                     columns: [
@@ -730,7 +730,7 @@ const handleDownloadPDF = async () => {
                         { width: "1%", text: "" },
 
                         {
-                            width: "26%",
+                            width: "28%",
                             table: {
                                 widths: ["65%", "35%"],
                                 body: [
@@ -745,7 +745,7 @@ const handleDownloadPDF = async () => {
                         { width: "1%", text: "" },
 
                         {
-                            width: "23%",
+                            width: "25%",
                             table: {
                                 widths: ["65%", "35%"],
                                 body: [
@@ -757,24 +757,6 @@ const handleDownloadPDF = async () => {
                                         .map((item, index) => [item.name || `Manual ${index + 1}`, n(item.amount)]),
                                     ["Home Purchasing", redBookTotal.value],
                                     ["Total", { text: purchasingTotal.value, bold: true }],
-                                ],
-                            },
-                            layout: "lightHorizontalLines",
-                        },
-
-                        { width: "1%", text: "" },
-
-                        {
-                            width: "23%",
-                            table: {
-                                widths: ["50%", "50%"],
-                                body: [
-                                    [{ text: "EasyLoad Summary", colSpan: 2, style: "tableHeader", alignment: "center" }, {}],
-                                    ["Telenor", getELoadSell("telenor")],
-                                    ["Jazz", getELoadSell("jazz")],
-                                    ["Ufone", getELoadSell("ufone")],
-                                    ["Zong", getELoadSell("zong")],
-                                    ["Total", { text: totalELoad.value, bold: true }],
                                 ],
                             },
                             layout: "lightHorizontalLines",
