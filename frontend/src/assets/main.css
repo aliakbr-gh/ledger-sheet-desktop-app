@@ -115,7 +115,7 @@ input:disabled {
 
 .eload-accounts-container {
     display: flex;
-    gap: 150px;
+    gap: 30px;
     align-items: start;
     justify-content: center;
     margin-bottom: 10px;
@@ -144,7 +144,7 @@ input:disabled {
 
 .analytics-container {
     display: flex;
-    gap: 40px;
+    gap: 32px;
     align-items: start;
     justify-content: center;
 }

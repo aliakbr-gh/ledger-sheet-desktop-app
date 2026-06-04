@@ -10,87 +10,87 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-// App struct
 type App struct {
 	ctx context.Context
 }
 
-// NewApp creates a new App application struct
 func NewApp() *App {
 	return &App{}
 }
 
-// startup is called when the app starts. The context is saved
-// so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
-
 	runtime.WindowMaximise(ctx)
 }
 
-// Greet returns a greeting for the given name
-func (a *App) Greet(name string) string {
-	return fmt.Sprintf("Hello %s, It's show time!", name)
-}
-
-func (a *App) SavePDF(fileName string, data []byte) error {
+func (a *App) SavePDF(fileName string, pdfData []byte, jsonData string) error {
 
 	var basePath string
 
 	switch goruntime.GOOS {
-
 	case "windows":
 		customPath := `D:\Khawaj Muhammad Khan\Shop Documents\Daily Worksheet 2026`
-
-		// Check if custom path exists
 		if _, err := os.Stat(customPath); err == nil {
 			basePath = customPath
 		} else {
-			// Fallback to Downloads folder
 			home, err := os.UserHomeDir()
 			if err != nil {
 				return err
 			}
-
 			basePath = filepath.Join(home, "Downloads", "KMKCommunication")
 		}
 
-	case "darwin", "linux":
+	default:
 		home, err := os.UserHomeDir()
 		if err != nil {
 			return err
 		}
 		basePath = filepath.Join(home, "Downloads", "KMKCommunication")
-
-	default:
-		home, _ := os.UserHomeDir()
-		basePath = filepath.Join(home, "KMKCommunication")
 	}
 
-	err := os.MkdirAll(basePath, os.ModePerm)
+	if err := os.MkdirAll(basePath, os.ModePerm); err != nil {
+		return err
+	}
+
+	pdfFullPath := filepath.Join(basePath, fileName)
+	finalPdfPath, err := a.saveWithDuplicateHandling(pdfFullPath, pdfData)
 	if err != nil {
 		return err
 	}
 
-	fullPath := filepath.Join(basePath, fileName)
+	jsonFileName := fileName[:len(fileName)-4] + ".json"
+	jsonFullPath := filepath.Join(basePath, jsonFileName)
+	_, err = a.saveWithDuplicateHandling(jsonFullPath, []byte(jsonData))
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("✅ Saved: %s\n   and   %s\n", filepath.Base(finalPdfPath), jsonFileName)
+	return nil
+}
+
+func (a *App) saveWithDuplicateHandling(fullPath string, data []byte) (string, error) {
 
 	if _, err := os.Stat(fullPath); err == nil {
-		ext := filepath.Ext(fileName)
-		name := fileName[:len(fileName)-len(ext)]
+		ext := filepath.Ext(fullPath)
+		nameWithoutExt := fullPath[:len(fullPath)-len(ext)]
 
 		counter := 1
 		for {
-			newFileName := fmt.Sprintf("%s (%d)%s", name, counter, ext)
-			newPath := filepath.Join(basePath, newFileName)
+			newPath := fmt.Sprintf("%s (%d)%s", nameWithoutExt, counter, ext)
 
 			if _, err := os.Stat(newPath); os.IsNotExist(err) {
 				fullPath = newPath
 				break
 			}
-
 			counter++
 		}
 	}
 
-	return os.WriteFile(fullPath, data, 0644)
+	err := os.WriteFile(fullPath, data, 0644)
+	if err != nil {
+		return "", err
+	}
+
+	return fullPath, nil
 }

@@ -54,6 +54,7 @@ type Sheet = {
     accountBalance265999891: number | null;
     accountBalance37300247: number | null;
 
+    stampPaper: { name: string; amount: number | null }[];
     recovery: { name: string; amount: number | null }[];
 
     deposit265999891: number | null;
@@ -75,8 +76,6 @@ type Sheet = {
         epaccount: number | null;
         jcaccount: number | null;
     };
-
-    stampPaperTotal: number | null;
 
     manualpurchasing: { name: string; amount: number | null }[];
 
@@ -120,7 +119,12 @@ const sheet = reactive<Sheet>({
     accountBalance265999891: null,
     accountBalance37300247: null,
 
-    recovery: Array.from({ length: 11 }, () => ({
+    stampPaper: Array.from({ length: 13 }, () => ({
+        name: "",
+        amount: null as number | null,
+    })),
+
+    recovery: Array.from({ length: 12 }, () => ({
         name: "",
         amount: null as number | null,
     })),
@@ -160,8 +164,6 @@ const sheet = reactive<Sheet>({
         name: "",
         amount: null,
     })),
-
-    stampPaperTotal: null,
 
     lastBalances: {
         omni: null,
@@ -220,6 +222,34 @@ watch(
         deep: true,
     }
 );
+
+const uploadBackup = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+
+    input.onchange = (e: Event) => {
+        const file = (e.target as HTMLInputElement).files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+
+        reader.onload = (event) => {
+            try {
+                const parsed = JSON.parse(event.target?.result as string);
+                Object.assign(sheet, parsed);
+
+                toast.success(`Backup "${file.name}" loaded successfully!`);
+            } catch (err) {
+                toast.error(`"${file.name}" is not a valid backup file`);
+            }
+        };
+
+        reader.readAsText(file);
+    };
+
+    input.click();
+};
 
 const confirmClearSheet = () => {
     showClearSheetModal.value = false;
@@ -287,6 +317,11 @@ const confirmClearSheet = () => {
         item.amount = null;
     });
 
+    sheet.stampPaper.forEach((item) => {
+        item.name = "";
+        item.amount = null;
+    });
+
     sheet.recovery.forEach((item) => {
         item.name = "";
         item.amount = null;
@@ -297,7 +332,6 @@ const confirmClearSheet = () => {
         item.amount = null;
     });
 
-    sheet.stampPaperTotal = null;
     sheet.extra = null;
 
     toast.success("Sheet cleared successfully");
@@ -445,14 +479,20 @@ const totalELoad = computed(() => {
     return telenor + jazz + ufone + zong;
 });
 
+const stampPaperTotal = computed(() => {
+    return sheet.stampPaper.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+});
+
 const recoveryTotal = computed(() => {
-    return (
-        sheet.recovery.reduce(
-            (sum, item) => sum + (Number(item.amount) || 0),
-            0
-        ) +
-        n(sheet.stampPaperTotal)
+    const recoverySum = sheet.recovery.reduce(
+        (sum, item) => sum + (Number(item.amount) || 0),
+        0
     );
+    const stampPaperSum = sheet.stampPaper.reduce(
+        (sum, item) => sum + (Number(item.amount) || 0),
+        0
+    );
+    return recoverySum + stampPaperSum;
 });
 
 const getTotalSending = (
@@ -656,7 +696,24 @@ const handleDownloadPDF = async () => {
                 {
                     columns: [
                         {
-                            width: "26%",
+                            width: "20%",
+                            table: {
+                                widths: ["65%", "35%"],
+                                body: [
+                                    [{ text: "Stamp Paper", colSpan: 2, style: "tableHeader", alignment: "center" }, {}],
+                                    ...sheet.stampPaper
+                                        .filter(r => r.amount != null && r.amount > 0)
+                                        .map(r => ["Stamp Paper", n(r.amount)]),
+                                    ["Total", { text: stampPaperTotal.value, bold: true }],
+                                ],
+                            },
+                            layout: "lightHorizontalLines",
+                        },
+
+                        { width: "1%", text: "" },
+
+                        {
+                            width: "25%",
                             table: {
                                 widths: ["65%", "35%"],
                                 body: [
@@ -664,7 +721,6 @@ const handleDownloadPDF = async () => {
                                     ...sheet.recovery
                                         .filter(r => r.name || r.amount != null)
                                         .map(r => [r.name || "-", n(r.amount)]),
-                                    ["Stamp Paper", n(s.stampPaperTotal)],
                                     ["Total", { text: recoveryTotal.value, bold: true }],
                                 ],
                             },
@@ -818,10 +874,14 @@ const handleDownloadPDF = async () => {
         for (let i = 0; i < byteCharacters.length; i++) {
             byteNumbers[i] = byteCharacters.charCodeAt(i);
         }
-        const byteArray = new Uint8Array(byteNumbers);
+        const pdfArray = Array.from(new Uint8Array(byteNumbers));
 
-        await SavePDF(fileName, Array.from(byteArray));
+        const jsonData = JSON.stringify(sheet, null, 2);
+
+        await SavePDF(fileName, pdfArray, jsonData);
+
         toast.success(`File: ${fileName} PDF generated and saved successfully!`);
+        toast.success(`JSON Backup saved successfully!`);
     } catch (err: any) {
         console.error("PDF Error:", err);
         toast.error(`Error generating PDF: ${err.message || err}`);
@@ -860,9 +920,11 @@ const clearLocalStorage = () => {
                         <button class="button" @click="showCashModal = true">
                             Cash Calculator
                         </button>
-
                         <button class="button" @click="handleDownloadPDF">
                             Save PDF
+                        </button>
+                        <button class="button" @click="uploadBackup">
+                            Upload Backup
                         </button>
                         <button class="button-danger" @click="showClearSheetModal = true">
                             Clear Sheet
@@ -1029,6 +1091,20 @@ const clearLocalStorage = () => {
                 </div>
 
                 <div class="purchasing-recovery-container">
+                    <div class="stamp-paper-container">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <th colspan="1">Stamp Paper</th>
+                                </tr>
+                                <tr v-for="(row, index) in sheet.stampPaper" :key="index">
+                                    <td>
+                                        <input type="number" v-model.number="row.amount" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div class="recovery-container">
                         <table>
                             <tbody>
@@ -1042,14 +1118,6 @@ const clearLocalStorage = () => {
                                     </td>
                                     <td>
                                         <input type="number" v-model.number="row.amount" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <input type="text" value="Stamp Paper" disabled />
-                                    </td>
-                                    <td>
-                                        <input v-model.number="sheet.stampPaperTotal" type="number" />
                                     </td>
                                 </tr>
                                 <tr>
