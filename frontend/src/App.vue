@@ -815,7 +815,7 @@ const handleDownloadPDF = async () => {
                                     ["Total Cash", n(s.previousCash) + cashInfoTotal.value],
                                     ["Purchasing", purchasingTotal.value],
                                     ["Remaining", (n(s.previousCash) + cashInfoTotal.value) - purchasingTotal.value],
-                                    [{ text: "DIFFERENCE", bold: true }, { text: ((n(s.previousCash) + cashInfoTotal.value) - purchasingTotal.value - cashTotal.value), bold: true }],
+                                    [{ text: "DIFFERENCE", bold: true, fontSize: 8 }, { text: (cashTotal.value - ((n(s.previousCash) + cashInfoTotal.value) - purchasingTotal.value)), bold: true, fontSize: 8 }],
                                 ],
                             },
                             layout: "lightHorizontalLines",
@@ -1521,7 +1521,7 @@ const clearLocalStorage = () => {
                                 <td style="font-size: 1.5rem;">Difference</td>
                                 <td>
                                     <input style="font-size: 1.1rem;"
-                                        :value="(cashTotal - (n(sheet.previousCash) + cashInfoTotal) - purchasingTotal)"
+                                        :value="(cashTotal - ((n(sheet.previousCash) + cashInfoTotal) - purchasingTotal))"
                                         type="number" readonly />
                                 </td>
                             </tr>
