@@ -115,7 +115,7 @@ input:disabled {
 
 .eload-accounts-container {
     display: flex;
-    gap: 30px;
+    gap: 10px;
     align-items: start;
     justify-content: center;
     margin-bottom: 10px;
@@ -136,7 +136,7 @@ input:disabled {
 
 .statements-container {
     display: flex;
-    gap: 15px;
+    gap: 36px;
     align-items: start;
     justify-content: center;
     margin-bottom: 10px;
@@ -144,7 +144,7 @@ input:disabled {
 
 .analytics-container {
     display: flex;
-    gap: 32px;
+    gap: 60px;
     align-items: start;
     justify-content: center;
 }
@@ -163,4 +163,20 @@ input[type="number"]::-webkit-outer-spin-button {
     height: 20px;
     line-height: 20px;
     box-sizing: border-box;
+}
+
+.summary-all {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5px;
+}
+
+.summary-all th,
+.summary-all td {
+    font-size: smaller;
+    border: 1px solid gray;
+    padding: 0 20px;
+    font-style: italic;
 }

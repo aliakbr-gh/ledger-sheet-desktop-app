@@ -940,6 +940,21 @@ const clearLocalStorage = () => {
                 </div>
             </div>
 
+            <div class="summary-all">
+                <table>
+                    <tr>
+                        <th>Total Sell</th>
+                        <th>Total Purchasing</th>
+                        <th>Total Cash In Drawer</th>
+                    </tr>
+                    <tr>
+                        <td>{{ cashInfoTotal }}</td>
+                        <td>{{ purchasingTotal }}</td>
+                        <td>{{ (n(sheet.previousCash) + cashInfoTotal) - purchasingTotal }}</td>
+                    </tr>
+                </table>
+            </div>
+
             <div class="eload-accounts-container">
                 <div>
                     <div class="easyload-container">
@@ -1112,9 +1127,12 @@ const clearLocalStorage = () => {
                         <table>
                             <tbody>
                                 <tr>
-                                    <th colspan="1">Rent</th>
+                                    <th colspan="2">Rent</th>
                                 </tr>
                                 <tr v-for="(row, index) in sheet.rent" :key="index">
+                                    <td>
+                                        <input type="text" v-model="row.name" />
+                                    </td>
                                     <td>
                                         <input type="number" v-model.number="row.amount" />
                                     </td>
