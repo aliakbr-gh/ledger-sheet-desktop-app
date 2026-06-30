@@ -386,6 +386,8 @@ const updateDateTime = () => {
     });
 
     // Islamic Urdu Date
+    const pakistanDate = new Date(now);
+    pakistanDate.setDate(pakistanDate.getDate() - 1);
     const islamicFormatter = new Intl.DateTimeFormat(
         "ur-PK-u-ca-islamic-umalqura",
         {
@@ -396,7 +398,7 @@ const updateDateTime = () => {
         }
     );
 
-    const parts = islamicFormatter.formatToParts(now);
+    const parts = islamicFormatter.formatToParts(pakistanDate);
 
     const day = parts.find(p => p.type === "day")?.value || "";
     const month = parts.find(p => p.type === "month")?.value || "";
