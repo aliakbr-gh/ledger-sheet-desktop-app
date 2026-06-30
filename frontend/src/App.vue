@@ -718,7 +718,7 @@ const handleDownloadPDF = async () => {
                 {
                     columns: [
                         {
-                            width: "20%",
+                            width: "15%",
                             table: {
                                 widths: ["65%", "35%"],
                                 body: [
@@ -735,11 +735,30 @@ const handleDownloadPDF = async () => {
                         { width: "1%", text: "" },
 
                         {
-                            width: "25%",
+                            width: "20%",
+                            table: {
+                                widths: ["65%", "35%"],
+                                body: [
+                                    [{ text: "Rent", colSpan: 2, style: "tableHeader", alignment: "center" }, {}],
+                                    ...sheet.rent
+                                        .filter(r => r.amount != null && r.amount > 0)
+                                        .map(r => [r.name || "Rent", n(r.amount)]),
+                                    ["Total", { text: rentTotal.value, bold: true }],
+                                ],
+                            },
+                            layout: "lightHorizontalLines",
+                        },
+
+                        { width: "1%", text: "" },
+
+                        {
+                            width: "20%",
                             table: {
                                 widths: ["65%", "35%"],
                                 body: [
                                     [{ text: "Recovery / Sell", colSpan: 2, style: "tableHeader", alignment: "center" }, {}],
+                                    ["Stamp Paper", stampPaperTotal.value],
+                                    ["Rent", rentTotal.value],
                                     ...sheet.recovery
                                         .filter(r => r.name || r.amount != null)
                                         .map(r => [r.name || "-", n(r.amount)]),
@@ -752,7 +771,7 @@ const handleDownloadPDF = async () => {
                         { width: "1%", text: "" },
 
                         {
-                            width: "28%",
+                            width: "20%",
                             table: {
                                 widths: ["65%", "35%"],
                                 body: [
@@ -767,17 +786,17 @@ const handleDownloadPDF = async () => {
                         { width: "1%", text: "" },
 
                         {
-                            width: "25%",
+                            width: "20%",
                             table: {
                                 widths: ["65%", "35%"],
                                 body: [
                                     [{ text: "Purchasing", colSpan: 2, style: "tableHeader", alignment: "center" }, {}],
                                     ["Omni/EP/JC Rec", getTotalReceiving(sheet.omni) + getTotalReceiving(sheet.easypaisa) + getTotalReceiving(sheet.jazzcash)],
                                     ["EP/JC Acc", getTotalReceiving(sheet.epaccount) + getTotalReceiving(sheet.jcaccount)],
+                                    ["Home Purchasing", redBookTotal.value],
                                     ...sheet.manualpurchasing
                                         .filter((item) => item.name || item.amount != null)
                                         .map((item, index) => [item.name || `Manual ${index + 1}`, n(item.amount)]),
-                                    ["Home Purchasing", redBookTotal.value],
                                     ["Total", { text: purchasingTotal.value, bold: true }],
                                 ],
                             },
@@ -942,16 +961,20 @@ const clearLocalStorage = () => {
 
             <div class="summary-all">
                 <table>
-                    <tr>
-                        <th>Total Sell</th>
-                        <th>Total Purchasing</th>
-                        <th>Total Cash In Drawer</th>
-                    </tr>
-                    <tr>
-                        <td>{{ cashInfoTotal }}</td>
-                        <td>{{ purchasingTotal }}</td>
-                        <td>{{ (n(sheet.previousCash) + cashInfoTotal) - purchasingTotal }}</td>
-                    </tr>
+                    <thead>
+                        <tr>
+                            <th>Total Sell</th>
+                            <th>Total Purchasing</th>
+                            <th>Total Cash In Drawer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ cashInfoTotal }}</td>
+                            <td>{{ purchasingTotal }}</td>
+                            <td>{{ (n(sheet.previousCash) + cashInfoTotal) - purchasingTotal }}</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
 
