@@ -55,6 +55,7 @@ type Sheet = {
     accountBalance37300247: number | null;
 
     stampPaper: { name: string; amount: number | null }[];
+    rent: { name: string; amount: number | null }[];
     recovery: { name: string; amount: number | null }[];
 
     deposit265999891: number | null;
@@ -119,12 +120,17 @@ const sheet = reactive<Sheet>({
     accountBalance265999891: null,
     accountBalance37300247: null,
 
-    stampPaper: Array.from({ length: 13 }, () => ({
+    stampPaper: Array.from({ length: 6 }, () => ({
         name: "",
         amount: null as number | null,
     })),
 
-    recovery: Array.from({ length: 12 }, () => ({
+    rent: Array.from({ length: 5 }, () => ({
+        name: "",
+        amount: null as number | null,
+    })),
+
+    recovery: Array.from({ length: 10 }, () => ({
         name: "",
         amount: null as number | null,
     })),
@@ -323,6 +329,11 @@ const confirmClearSheet = () => {
         item.amount = null;
     });
 
+    sheet.rent.forEach((item) => {
+        item.name = "";
+        item.amount = null;
+    });
+
     sheet.recovery.forEach((item) => {
         item.name = "";
         item.amount = null;
@@ -484,6 +495,10 @@ const stampPaperTotal = computed(() => {
     return sheet.stampPaper.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
 });
 
+const rentTotal = computed(() => {
+    return sheet.rent.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+});
+
 const recoveryTotal = computed(() => {
     const recoverySum = sheet.recovery.reduce(
         (sum, item) => sum + (Number(item.amount) || 0),
@@ -493,7 +508,11 @@ const recoveryTotal = computed(() => {
         (sum, item) => sum + (Number(item.amount) || 0),
         0
     );
-    return recoverySum + stampPaperSum;
+    const rentSum = sheet.rent.reduce(
+        (sum, item) => sum + (Number(item.amount) || 0),
+        0
+    );
+    return recoverySum + stampPaperSum + rentSum;
 });
 
 const getTotalSending = (
@@ -1074,13 +1093,26 @@ const clearLocalStorage = () => {
                 </div>
 
                 <div class="purchasing-recovery-container">
-                    <div class="stamp-paper-container">
+                    <div class="stamp-paper-rent-container">
                         <table>
                             <tbody>
                                 <tr>
                                     <th colspan="1">Stamp Paper</th>
                                 </tr>
                                 <tr v-for="(row, index) in sheet.stampPaper" :key="index">
+                                    <td>
+                                        <input type="number" v-model.number="row.amount" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <th colspan="1">Rent</th>
+                                </tr>
+                                <tr v-for="(row, index) in sheet.rent" :key="index">
                                     <td>
                                         <input type="number" v-model.number="row.amount" />
                                     </td>
@@ -1094,7 +1126,22 @@ const clearLocalStorage = () => {
                                 <tr>
                                     <th colspan="2">Recovery/Sell</th>
                                 </tr>
-
+                                <tr>
+                                    <td>
+                                        <input type="text" value="Stamp Paper" disabled />
+                                    </td>
+                                    <td>
+                                        <input :value="stampPaperTotal" type="number" disabled />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text" value="Rent" disabled />
+                                    </td>
+                                    <td>
+                                        <input :value="rentTotal" type="number" disabled />
+                                    </td>
+                                </tr>
                                 <tr v-for="(row, index) in sheet.recovery" :key="index">
                                     <td>
                                         <input type="text" v-model="row.name" />
@@ -1134,20 +1181,20 @@ const clearLocalStorage = () => {
                                             type="number" disabled />
                                     </td>
                                 </tr>
-                                <tr v-for="(row, index) in sheet.manualpurchasing" :key="index">
-                                    <td>
-                                        <input type="text" v-model="row.name" />
-                                    </td>
-                                    <td>
-                                        <input type="number" v-model.number="row.amount" />
-                                    </td>
-                                </tr>
                                 <tr>
                                     <td>
                                         <input type="text" value="Home Prchas" disabled />
                                     </td>
                                     <td>
                                         <input :value="redBookTotal" type="number" disabled />
+                                    </td>
+                                </tr>
+                                <tr v-for="(row, index) in sheet.manualpurchasing" :key="index">
+                                    <td>
+                                        <input type="text" v-model="row.name" />
+                                    </td>
+                                    <td>
+                                        <input type="number" v-model.number="row.amount" />
                                     </td>
                                 </tr>
                                 <tr>
