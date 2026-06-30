@@ -9,7 +9,7 @@ const emit = defineEmits<{
     (e: "update:modelValue", value: boolean): void;
 }>();
 
-const amounts = reactive<(number | null)[]>(Array(8).fill(null));
+const amounts = reactive<(number | null)[]>(Array(10).fill(null));
 
 const cash = reactive({
     cash5000: null as number | null,
@@ -144,7 +144,7 @@ const closeModal = () => {
 }
 
 .modal-box {
-    width: 1000px;
+    width: 700px;
     max-width: 95vw;
     background: white;
     border-radius: 12px;
@@ -175,8 +175,8 @@ const closeModal = () => {
 
 .content {
     display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 20px;
+    grid-template-columns: 200px 1fr;
+    gap: 10px;
 }
 
 .card {
@@ -200,10 +200,12 @@ const closeModal = () => {
 .table td {
     border: 1px solid #ddd;
     padding: 2px;
+    font-size: 1rem;
 }
 
 .table th {
     background: #f5f5f5;
+    font-size: 1rem;
 }
 
 .table input {
@@ -212,7 +214,7 @@ const closeModal = () => {
     padding: 5px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 0.8rem;
+    font-size: 1rem;
 }
 
 .footer-row {
@@ -241,6 +243,7 @@ const closeModal = () => {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    font-size: 1.2rem;
 }
 
 .summary-row {
